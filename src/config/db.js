@@ -3,17 +3,8 @@ const mysql = require("mysql2/promise");
 require("dotenv").config();
 
 // Define as configurações da conexão com o MySQL
-const pool = mysql.createPool({
-  host: process.env.DB_SERVER || process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  waitForConnections: true,
-  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
-  queueLimit: 0,
-  timezone: "Z",
-  decimalNumbers: true,
-});
+const connectionString = process.env.DATABASE_URL;
+const pool = mysql.createPool(connectionString);
 
 // Cria uma pool de conexões
 async function query(sql, params) {
@@ -25,6 +16,16 @@ async function query(sql, params) {
     throw error;
   }
 }
+
+(async () => {
+  try {
+    const connection = await pool.getConnection();
+    console.log("Conexão com o banco de dados estabelecida com sucesso!");
+    connection.release();
+  } catch (error) {
+    console.error("Falha ao conectar ao banco de dados:", error.message);
+  }
+})();
 
 // Exporta o pool e o módulo sql para uso nos models
 module.exports = { pool, query };
