@@ -2,10 +2,10 @@ const { pool, query } = require("./config/db");
 
 async function testarConexao() {
   try {
-    const result = await query("SELECT NOW() AS dataHoraAtual");
+    const result = await query("SELECT * FROM usuarios");
     console.log(
-      "Conexão bem-sucedida. Data e hora atual do banco:",
-      result[0].dataHoraAtual
+      "Conexão bem-sucedida. Primeiro usuário:",
+      result[0]
     );
   } catch (err) {
     console.error("Erro na conexão com o banco:", err);
