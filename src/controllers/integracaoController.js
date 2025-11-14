@@ -61,7 +61,11 @@ const integracaoController = {
         "https://controlafacil.vercel.app/integracao-sucesso"
       );
     } catch (error) {
-      return res.redirect("https://controlafacil.vercel.app/integracao-erro");
+      return res.status(500).json({
+        error: "Erro ao processar callback do Mercado Livre: " + error,
+        urlRedirect: "https://controlafacil.vercel.app/integracao-erro",
+        sucesso: false,
+      });
     }
   },
 };
