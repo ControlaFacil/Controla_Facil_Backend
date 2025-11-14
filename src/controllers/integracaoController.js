@@ -45,9 +45,11 @@ const integracaoController = {
           client_secret: process.env.ML_CLIENTE_SECRET,
           code: code,
           redirect_uri: process.env.ML_REDIRECT_URI,
+          code_verifier: '$CODE_VERIFIER'
         },
         {
           headers: {
+            'accept': 'application/json',
             "Content-Type": "application/x-www-form-urlencoded",
           },
         }
