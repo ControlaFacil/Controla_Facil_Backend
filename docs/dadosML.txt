@@ -6,11 +6,11 @@ client Id: 5137782277166166
 
 secret-key: g1naoZfuSzwlMuz40ZRmFia6rPfIZF7Q
 
-redirectUrl: https://guigaldino.github.io/Aplicacao-Teste/FrontEnd/index.html
+redirectUrl: https://controlafacilbackend-production.up.railway.app/api/integracoes/callback
 
 TG-690d4e8e4cf4a50001936f5e-1533497939
 
-https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=5137782277166166&redirect_uri=https://guigaldino.github.io/Aplicacao-Teste/FrontEnd/index.html
+https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=5137782277166166&redirect_uri=https://controlafacilbackend-production.up.railway.app/api/integracoes/callback
 
 =====================================================================================================================================================================================
 
@@ -20,6 +20,6 @@ https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=5137
 AUTENTICAÇÃO DE USUÁRIO EXTERNO NA APLICAÇÃO
 
 
-URL DE AUTORIZAÇÃO: https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=5137782277166166&redirect_uri=https://guigaldino.github.io/Aplicacao-Teste/FrontEnd/index.html
+URL DE AUTORIZAÇÃO: https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=5137782277166166&redirect_uri=https://controlafacilbackend-production.up.railway.app/api/integracoes/callback
 
 =====================================================================================================================================================================================

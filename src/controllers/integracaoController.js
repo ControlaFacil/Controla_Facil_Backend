@@ -33,7 +33,7 @@ const integracaoController = {
   async mercadoLivreCallback(req, res) {
     const { code } = req.query;
     if (!code) {
-      return res.redirect("https://controlafacil.vercel.app/integracao-erro");
+      return res.redirect("https://www.uol.com.br/");
     }
 
     try {
