@@ -21,12 +21,16 @@ CREATE TABLE `integracoes` (
   `imagem_url` VARCHAR(500)
 );
 
-CREATE TABLE `integracao_configuracao` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `integracao_id` INT NOT NULL UNIQUE, 
-  `usuario_configurador_id` INT NOT NULL,
-  `parametros_configuracao` TEXT NOT NULL,
-  `data_ativacao` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE integracao_configuracao (
+  `id INT PRIMARY KEY AUTO_INCREMENT`,
+  `usuario_configurador_id INT NULL`,
+  `integracao_id INT NOT NULL UNIQUE`,
+  `access_token VARCHAR(800) NOT NULL`,
+  `refresh_token VARCHAR(800) NOT NULL`,
+  `expires_at DATETIME NOT NULL`,
+  `mercado_livre_user_id BIGINT NOT NULL`,
+  `data_ativacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
+  `data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`
 );
 
 CREATE TABLE `categoria_produto` (

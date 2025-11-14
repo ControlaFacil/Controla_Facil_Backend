@@ -53,5 +53,6 @@ const integracaoController = require('../controllers/integracaoController');
  */
 
 router.post('/integracoes', autenticar, integracaoController.inserirIntegracao);
+router.get('/integracoes/callback', integracaoController.mercadoLivreCallback);
 
 module.exports = router;
