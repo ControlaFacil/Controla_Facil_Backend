@@ -37,19 +37,19 @@ const integracaoController = {
     }
 
     try {
+      const params = new URLSearchParams();
+      params.append("grant_type", "authorization_code");
+      params.append("client_id", process.env.ML_CLIENTE_ID);
+      params.append("client_secret", process.env.ML_CLIENTE_SECRET);
+      params.append("code", code);
+      params.append("redirect_uri", process.env.ML_REDIRECT_URI);
+
       const response = await axios.post(
         "https://api.mercadolibre.com/oauth/token",
-        {
-          grant_type: "authorization_code",
-          client_id: process.env.ML_CLIENTE_ID,
-          client_secret: process.env.ML_CLIENTE_SECRET,
-          code: code,
-          redirect_uri: process.env.ML_REDIRECT_URI,
-          code_verifier: '$CODE_VERIFIER'
-        },
+        params,
         {
           headers: {
-            'accept': 'application/json',
+            "accept": "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
           },
         }
