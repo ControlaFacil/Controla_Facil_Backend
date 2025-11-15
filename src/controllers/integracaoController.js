@@ -1,6 +1,7 @@
 // O integracaoController é responsável por gerenciar as operações relacionadas a integrações, como inserção, atualização e exclusão de dados.
 const axios = require("axios");
 const integracaoModel = require("../models/integracaoModel");
+require("dotenv").config();
 
 const integracaoController = {
   async inserirIntegracao(req, res) {
@@ -33,39 +34,34 @@ const integracaoController = {
   async mercadoLivreCallback(req, res) {
     const { code } = req.query;
     if (!code) {
-      return res.redirect("https://www.uol.com.br/");
+      return res.redirect(process.env.ML_URL_REDIRECT_ERRO);
     }
 
     try {
-      const params = new URLSearchParams();
-      params.append("grant_type", "authorization_code");
-      params.append("client_id", process.env.ML_CLIENTE_ID);
-      params.append("client_secret", process.env.ML_CLIENTE_SECRET);
-      params.append("code", code);
-      params.append("redirect_uri", process.env.ML_REDIRECT_URI);
-
-      const response = await axios.post(
-        "https://api.mercadolibre.com/oauth/token",
-        params,
-        {
-          headers: {
-            "accept": "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
+       const response = await axios.post(
+         "https://api.mercadolibre.com/oauth/token",
+         {
+           grant_type: "authorization_code",
+           client_id: process.env.ML_CLIENT_ID,
+           client_secret: process.env.ML_CLIENT_SECRET,
+           code,
+           redirect_uri: process.env.ML_REDIRECT_URI,
+         },
+         {
+           headers: { "Content-Type": "application/x-www-form-urlencoded" },
+         }
+       );
 
       await integracaoModel.salvarDadosMercadoLivre(response.data);
 
       return res.redirect(
-        "https://controlafacil.vercel.app/integracao-sucesso"
+        process.env.ML_URL_REDIRECT_SUCESSO
       );
+
     } catch (error) {
-      return res.status(500).json({
-        error: "Erro ao processar callback do Mercado Livre: " + error,
-        urlRedirect: "https://controlafacil.vercel.app/integracao-erro",
-        sucesso: false,
-      });
+      res.redirect(
+        process.env.ML_URL_REDIRECT_ERRO
+      );
     }
   },
 };

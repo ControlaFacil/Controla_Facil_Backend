@@ -34,6 +34,8 @@ const integracaoModel = {
         );
       }
 
+      const expires_at = new Date(Date.now() + data.expires_in * 1000 );
+
       const sql = `INSERT INTO integracao_configuracao (integracao_id, access_token, refresh_token, mercado_livre_user_id, expires_at) VALUES (?, ?, ?, ?, ?);`;
 
       const params = [
@@ -41,7 +43,7 @@ const integracaoModel = {
         data.access_token,
         data.refresh_token,
         data.user_id,
-        data.expires_in,
+        expires_at,
       ];
 
       await query(sql, params);
