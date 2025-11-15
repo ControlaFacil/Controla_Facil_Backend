@@ -34,7 +34,7 @@ const integracaoController = {
   async mercadoLivreCallback(req, res) {
     const { code } = req.query;
     if (!code) {
-      return res.redirect(process.env.ML_URL_REDIRECT_ERRO);
+      return res.redirect("https://controlafacil.vercel.app/integracao-erro");
     }
 
     try {
@@ -55,12 +55,12 @@ const integracaoController = {
       await integracaoModel.salvarDadosMercadoLivre(response.data);
 
       return res.redirect(
-        process.env.ML_URL_REDIRECT_SUCESSO
+        "https://controlafacil.vercel.app/integracao-sucesso"
       );
 
     } catch (error) {
       res.redirect(
-        process.env.ML_URL_REDIRECT_ERRO
+        "https://controlafacil.vercel.app/integracao-erro"
       );
     }
   },
