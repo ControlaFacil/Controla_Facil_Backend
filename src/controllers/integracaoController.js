@@ -59,9 +59,14 @@ const integracaoController = {
       );
 
     } catch (error) {
-      res.redirect(
-        "https://controlafacil.vercel.app/integracao-erro"
-      );
+      // res.redirect(
+      //   "https://controlafacil.vercel.app/integracao-erro"
+      // );
+
+      return res.status(500).json({
+        error: "Erro ao processar callback do Mercado Livre: " + error,
+        sucesso: false,
+      });
     }
   },
 };

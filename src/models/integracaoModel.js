@@ -48,12 +48,6 @@ const integracaoModel = {
 
       await query(sql, params);
 
-      const integracaoML = await query(
-        "SELECT * FROM integracao_configuracao WHERE mercado_livre_user_id = ?",
-        [data.user_id]
-      );
-
-      return integracaoML[0];
     } catch (error) {
       console.error("Erro ao salvar dados do Mercado Livre:", error);
       throw new Error("Erro ao salvar dados do Mercado Livre: " + error);
