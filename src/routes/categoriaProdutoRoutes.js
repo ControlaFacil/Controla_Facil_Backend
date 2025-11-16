@@ -80,6 +80,53 @@ const categoriaProdutoController = require('../controllers/categoriaProdutoContr
  *                   example: false
  */
 
+/**
+ * @swagger
+ * /categoria-produto:
+ *   get:
+ *     summary: Lista todas as categorias de produto
+ *     tags:
+ *       - CategoriaProduto
+ *     responses:
+ *       200:
+ *         description: Lista de categorias de produto
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nome:
+ *                         type: string
+ *                       usuario_criador:
+ *                         type: integer
+ *                         nullable: true
+ *                       excluido:
+ *                         type: integer
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: true
+ *       500:
+ *         description: Erro interno ao listar categorias
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: false
+ */
+
 router.post('/categoria-produto', autenticar, categoriaProdutoController.inserirCategoriaProduto);
+router.get('/categoria-produto', categoriaProdutoController.listarCategoriasProduto);
 
 module.exports = router;

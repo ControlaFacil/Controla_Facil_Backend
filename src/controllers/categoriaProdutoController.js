@@ -29,6 +29,22 @@ const categoriaProdutoController = {
                 sucesso: false,
             });
         }
+    },
+
+    async listarCategoriasProduto(req, res) {
+        try {
+            const categorias = await categoriaProdutoModel.listarTodas();
+            return res.status(200).json({
+                data: categorias,
+                sucesso: true,
+            });
+        } catch (error) {
+            console.error("Erro ao listar categorias de produto:", error);
+            return res.status(500).json({
+                error: "Erro ao listar categorias de produto",
+                sucesso: false,
+            });
+        }
     }
 }
 
