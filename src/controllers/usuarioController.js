@@ -64,6 +64,50 @@ const usuarioController = {
     }
   },
 
+  async atualizarUsuario(req, res) {
+    const { id, nome, email, cpf, celular, cargo } = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        error: "ID é obrigatório",
+        sucesso: false,
+      });
+    }
+
+    try {
+      const usuarioExistente = await Usuario.buscarPorId(id);
+
+      if (!usuarioExistente) {
+        return res.status(404).json({
+          error: `Usuário com ID ${id} não encontrado`,
+          sucesso: false,
+        });
+      }
+
+      const usuarioAtualizado = await Usuario.atualizar({
+        id,
+        nome: nome || usuarioExistente.nome,
+        email: email || usuarioExistente.email,
+        cpf: cpf || usuarioExistente.cpf,
+        celular: celular || usuarioExistente.celular,
+        cargo: cargo || usuarioExistente.cargo,
+      });
+
+      return res.status(200).json({
+        message: "Usuário atualizado com sucesso",
+        data: usuarioAtualizado,
+        sucesso: true,
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error);
+      return res.status(500).json({
+        error: "Erro ao atualizar usuário",
+        message: error.message,
+        sucesso: false,
+      });
+    }
+  },
+
   async login(req, res) {
     const { email, senha } = req.body;
 

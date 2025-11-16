@@ -25,10 +25,33 @@ const usuarioModel = {
     }
   },
 
+  async atualizar({ id, nome, email, cpf, celular, cargo }) {
+    try {
+      const sql = `
+        UPDATE usuarios 
+        SET nome = ?, email = ?, cpf = ?, celular = ?, cargo = ?
+        WHERE id = ?;;
+      `;
+
+      const params = [nome, email, cpf, celular, cargo, id];
+
+      await query(sql, params);
+
+      const usuario = await query("SELECT * FROM usuarios WHERE id = ?", [id]);
+
+      return usuario[0];
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error);
+      throw new Error("Erro ao atualizar usuário: " + error);
+    }
+  },
+
   async listarUsuarios() {
     try {
-        const usuarios = await query("SELECT id, nome, email, cpf, celular, cargo FROM usuarios");
-        return usuarios;
+      const usuarios = await query(
+        "SELECT id, nome, email, cpf, celular, cargo FROM usuarios"
+      );
+      return usuarios;
     } catch (error) {
       console.error("Erro ao listar usuários:", error);
       throw new Error("Erro ao listar usuários: " + error);
@@ -37,7 +60,10 @@ const usuarioModel = {
 
   async buscarPorId(id) {
     try {
-      const result = await query("SELECT id, nome, email, cpf, celular, cargo FROM usuarios WHERE id = ?", [id]);
+      const result = await query(
+        "SELECT id, nome, email, cpf, celular, cargo FROM usuarios WHERE id = ?",
+        [id]
+      );
       return result[0];
     } catch (error) {
       console.error("Erro ao buscar usuário por ID:", error);

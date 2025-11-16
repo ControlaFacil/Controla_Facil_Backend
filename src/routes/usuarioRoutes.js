@@ -290,10 +290,107 @@ const usuarioController = require('../controllers/usuarioController');
  *               sucesso: false
  */
 
+/**
+ * @swagger
+ * /api/usuarios/{id}:
+ *   put:
+ *     tags:
+ *       - Usuários
+ *     summary: Atualiza os dados de um usuário existente
+ *     description: Atualiza os campos informados de um usuário pelo ID. Campos não enviados permanecem inalterados.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *                 example: 1
+ *               nome:
+ *                 type: string
+ *                 example: "João da Silva"
+ *               email:
+ *                 type: string
+ *                 example: "joao@email.com"
+ *               cpf:
+ *                 type: string
+ *                 example: "12345678900"
+ *               celular:
+ *                 type: string
+ *                 example: "11999999999"
+ *               cargo:
+ *                 type: string
+ *                 example: "Administrador"
+ *             required:
+ *               - id
+ *     responses:
+ *       '200':
+ *         description: Usuário atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Usuário atualizado com sucesso"
+ *                 data:
+ *                   type: object
+ *                   description: Dados do usuário atualizado
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: true
+ *       '400':
+ *         description: Erro de validação (ID ausente)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ID é obrigatório"
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: false
+ *       '404':
+ *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Usuário com ID 1 não encontrado"
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: false
+ *       '500':
+ *         description: Erro interno ao atualizar usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erro ao atualizar usuário"
+ *                 message:
+ *                   type: string
+ *                   example: "Detalhes do erro"
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: false
+ */
+
 router.post('/usuarios', autenticar, usuarioController.inserirUsuario);
 router.post('/usuarios/login', usuarioController.login);
 router.get('/usuarios', autenticar, usuarioController.listarUsuarios);
 router.get('/usuarios/me', autenticar, usuarioController.dadosUsuarioLogado);
 router.get('/usuarios/:id', autenticar, usuarioController.buscarPorId);
+router.put('/usuarios/:id', autenticar, usuarioController.atualizarUsuario);
 
 module.exports = router;
