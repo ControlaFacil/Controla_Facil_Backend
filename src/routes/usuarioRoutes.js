@@ -386,7 +386,7 @@ const usuarioController = require('../controllers/usuarioController');
  *                   example: false
  */
 
-router.post('/usuarios', autenticar, usuarioController.inserirUsuario);
+router.post('/usuarios', usuarioController.inserirUsuario);
 router.post('/usuarios/login', usuarioController.login);
 router.get('/usuarios', autenticar, usuarioController.listarUsuarios);
 router.get('/usuarios/me', autenticar, usuarioController.dadosUsuarioLogado);
