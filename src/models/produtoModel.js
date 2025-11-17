@@ -9,17 +9,15 @@ const produtoModel = {
     descricao,
     preco,
     modelo_produto_id,
-    usuario_criador,
   }) {
     try {
-      const sql = `INSERT INTO produto (nome, sku, descricao, preco, modelo_produto_id, usuario_criador) VALUES (?, ?, ?, ?, ?, ?);`;
+      const sql = `INSERT INTO produto (nome, sku, descricao, preco, modelo_produto_id) VALUES (?, ?, ?, ?, ?);`;
       const params = [
         nome,
         sku,
         descricao,
         preco,
         modelo_produto_id,
-        usuario_criador,
       ];
       const result = await query(sql, params);
       const produto = await query(
@@ -46,13 +44,10 @@ p.data_alteracao dataAlteracao,
 mp.id modeloProdutoId,
 mp.nome modeloProdutoNome,
 tp.id tipoProdutoId,
-tp.nome tipoProdutoNome,
-u.id usuarioCriadorId,
-u.nome usuarioCriadorNome
+tp.nome tipoProdutoNome
 FROM produto p
 INNER JOIN modelo_produto mp ON mp.id = p.modelo_produto_id
-INNER JOIN tipo_produto tp ON tp.id = mp.tipo_produto_id
-INNER JOIN usuarios u ON u.id = p.usuario_criador;`;
+INNER JOIN tipo_produto tp ON tp.id = mp.tipo_produto_id;`;
       const produtos = await query(sql);
       return produtos;
     } catch (error) {
@@ -75,13 +70,10 @@ p.data_alteracao dataAlteracao,
 mp.id modeloProdutoId,
 mp.nome modeloProdutoNome,
 tp.id tipoProdutoId,
-tp.nome tipoProdutoNome,
-u.id usuarioCriadorId,
-u.nome usuarioCriadorNome
+tp.nome tipoProdutoNome
 FROM produto p
 INNER JOIN modelo_produto mp ON mp.id = p.modelo_produto_id
 INNER JOIN tipo_produto tp ON tp.id = mp.tipo_produto_id
-INNER JOIN usuarios u ON u.id = p.usuario_criador
 where p.id = ?
         `;
 

@@ -122,7 +122,7 @@ const modeloProdutoController = require("../controllers/modeloProdutoController"
 
 const router = express.Router();
 
-router.post("/modelo-produto", autenticar, modeloProdutoController.inserirModeloProduto);
-router.get("/modelo-produto", autenticar, modeloProdutoController.listarModelosProduto);
+router.post("/modelo-produto", modeloProdutoController.inserirModeloProduto);
+router.get("/modelo-produto", modeloProdutoController.listarModelosProduto);
 
 module.exports = router;

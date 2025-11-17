@@ -246,8 +246,8 @@ const autenticar = require('../middlewares/autenticar');
 
 const router = express.Router();
 
-router.post('/produto', autenticar, produtoController.inserirProduto);
-router.get('/produto', autenticar, produtoController.listarProdutos);
-router.get('/produto/:id', autenticar, produtoController.listarProdutoPorId);
+router.post('/produto', produtoController.inserirProduto);
+router.get('/produto', produtoController.listarProdutos);
+router.get('/produto/:id', produtoController.listarProdutoPorId);
 
 module.exports = router;

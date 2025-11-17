@@ -5,7 +5,6 @@ const produtoModel = require("../models/produtoModel");
 const produtoController = {
   async inserirProduto(req, res) {
     try {
-      const usuario_criador = req.usuario.id;
       const { nome, sku, descricao, preco, modelo_produto_id } = req.body;
 
       if (!nome || !sku || !preco || !modelo_produto_id) {
@@ -22,7 +21,6 @@ const produtoController = {
         descricao,
         preco,
         modelo_produto_id,
-        usuario_criador,
       });
 
       res.status(201).json({ produto, sucesso: true });

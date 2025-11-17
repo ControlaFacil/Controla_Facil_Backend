@@ -3,10 +3,10 @@
 const { pool, query } = require("../config/db");
 
 const modeloProdutoModel = {
-  async inserir({ nome, tipo_produto_id, usuario_criador }) {
+  async inserir({ nome, tipo_produto_id }) {
     try {
-        const sql = `INSERT INTO modelo_produto (nome, tipo_produto_id, usuario_criador) VALUES (?, ?, ?);`;
-        const params = [nome, tipo_produto_id, usuario_criador];
+        const sql = `INSERT INTO modelo_produto (nome, tipo_produto_id) VALUES (?, ?);`;
+        const params = [nome, tipo_produto_id];
         const result = await query(sql, params);
         const modeloProduto = await query(
             "SELECT id, nome, tipo_produto_id FROM modelo_produto WHERE id = ?",
