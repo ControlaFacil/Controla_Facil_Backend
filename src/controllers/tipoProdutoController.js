@@ -5,8 +5,6 @@ const tipoProdutoModel = require("../models/tipoProdutoModel");
 const tipoProdutoController = {
   async inserirTipoProduto(req, res) {
     try {
-        const usuario_criador = req.usuario.id;
-
         const { nome, categoriaProdutoId } = req.body;
 
         if(!nome){
@@ -16,7 +14,7 @@ const tipoProdutoController = {
             });
         }
 
-        const tipoProduto = await tipoProdutoModel.inserir({ nome, usuario_criador });
+        const tipoProduto = await tipoProdutoModel.inserir({ nome });
 
         if (categoriaProdutoId && Array.isArray(categoriaProdutoId)) {
             await tipoProdutoModel.vincularCategorias(tipoProduto.id, categoriaProdutoId);

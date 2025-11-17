@@ -5,7 +5,6 @@ const categoriaProdutoModel = require("../models/categoriaProdutoModel");
 const categoriaProdutoController = {
     async inserirCategoriaProduto(req, res) {
         try {
-            const usuario_criador = req.usuario.id;
             const { nome } = req.body;
 
             if(!nome){
@@ -15,7 +14,7 @@ const categoriaProdutoController = {
                 });
             }
 
-            const novaCategoria = await categoriaProdutoModel.inserir({ nome, usuario_criador });
+            const novaCategoria = await categoriaProdutoModel.inserir({ nome});
 
             return res.status(201).json({
                 data: novaCategoria,

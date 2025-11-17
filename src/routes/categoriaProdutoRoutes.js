@@ -126,7 +126,7 @@ const categoriaProdutoController = require('../controllers/categoriaProdutoContr
  *                   example: false
  */
 
-router.post('/categoria-produto', autenticar, categoriaProdutoController.inserirCategoriaProduto);
+router.post('/categoria-produto', categoriaProdutoController.inserirCategoriaProduto);
 router.get('/categoria-produto', categoriaProdutoController.listarCategoriasProduto);
 
 module.exports = router;

@@ -119,7 +119,7 @@ const tipoProdutoController = require('../controllers/tipoProdutoController');
  *                   example: false
  */
 
-router.post('/tipo-produto', autenticar, tipoProdutoController.inserirTipoProduto);
-router.get('/tipo-produto', autenticar, tipoProdutoController.listarTiposProduto);
+router.post('/tipo-produto', tipoProdutoController.inserirTipoProduto);
+router.get('/tipo-produto', tipoProdutoController.listarTiposProduto);
 
 module.exports = router;
