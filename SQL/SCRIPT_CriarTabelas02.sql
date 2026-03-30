@@ -15,16 +15,9 @@ CREATE TABLE `usuarios` (
   `senhaHash` TEXT
 );
 
-CREATE TABLE `integracoes` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `nome` VARCHAR(255),
-  `imagem_url` VARCHAR(500)
-);
-
 CREATE TABLE integracao_configuracao (
   `id INT PRIMARY KEY AUTO_INCREMENT`,
   `usuario_configurador_id INT NULL`,
-  `integracao_id INT NOT NULL UNIQUE`,
   `access_token VARCHAR(800) NOT NULL`,
   `refresh_token VARCHAR(800) NOT NULL`,
   `expires_at DATETIME NOT NULL`,
@@ -128,55 +121,56 @@ CREATE TABLE `item_pedido` (
   `valor_desconto_item` DECIMAL(10, 2)
 );
 
-CREATE TABLE `devolucao` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `pedido_id` INT NOT NULL,
-  `numero_devolucao_marketplace` VARCHAR(255) UNIQUE, 
-  `data_devolucao` DATETIME NOT NULL,
-  `motivo_devolucao` TEXT NOT NULL,
-  `status_devolucao` VARCHAR(50) NOT NULL,
-  `data_status_attualizacao_devolucao` DATETIME NOT NULL,
-  `valor_total_devolucao` DECIMAL(10, 2) NOT NULL
-);
+-- AVALIAR PARA O FUTURO
+-- CREATE TABLE `devolucao` (
+--   `id` INT PRIMARY KEY AUTO_INCREMENT,
+--   `pedido_id` INT NOT NULL,
+--   `numero_devolucao_marketplace` VARCHAR(255) UNIQUE, 
+--   `data_devolucao` DATETIME NOT NULL,
+--   `motivo_devolucao` TEXT NOT NULL,
+--   `status_devolucao` VARCHAR(50) NOT NULL,
+--   `data_status_attualizacao_devolucao` DATETIME NOT NULL,
+--   `valor_total_devolucao` DECIMAL(10, 2) NOT NULL
+-- );
 
-CREATE TABLE `item_devolucao` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `devolucao_id` INT NOT NULL,
-  `item_pedido_id` INT NOT NULL,
-  `produto_id` INT NOT NULL,
-  `quantidade` INT NOT NULL,
-  `preco_unitario` DECIMAL(10, 2) NOT NULL
-);
+-- CREATE TABLE `item_devolucao` (
+--   `id` INT PRIMARY KEY AUTO_INCREMENT,
+--   `devolucao_id` INT NOT NULL,
+--   `item_pedido_id` INT NOT NULL,
+--   `produto_id` INT NOT NULL,
+--   `quantidade` INT NOT NULL,
+--   `preco_unitario` DECIMAL(10, 2) NOT NULL
+-- );
 
-CREATE TABLE `feedback` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `integracao_id` INT NOT NULL,
-  `numero_pedido_marketplace` VARCHAR(255) NOT NULL,
-  `produto_id` INT NOT NULL,
-  `nota` INT NOT NULL,
-  `comentario` TEXT NOT NULL,
-  `data_feedback` DATETIME NOT NULL,
-  `excluido` TINYINT DEFAULT 0
-);
+-- CREATE TABLE `feedback` (
+--   `id` INT PRIMARY KEY AUTO_INCREMENT,
+--   `integracao_id` INT NOT NULL,
+--   `numero_pedido_marketplace` VARCHAR(255) NOT NULL,
+--   `produto_id` INT NOT NULL,
+--   `nota` INT NOT NULL,
+--   `comentario` TEXT NOT NULL,
+--   `data_feedback` DATETIME NOT NULL,
+--   `excluido` TINYINT DEFAULT 0
+-- );
 
-CREATE TABLE `relatorio_personalizado` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `nome` VARCHAR(255) NOT NULL,
-  `parametros_json` JSON NOT NULL,
-  `usuario_criador` INT NOT NULL,
-  `data_criacao` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `data_ultima_edicao` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `excluido` TINYINT DEFAULT 0 
-);
+-- CREATE TABLE `relatorio_personalizado` (
+--   `id` INT PRIMARY KEY AUTO_INCREMENT,
+--   `nome` VARCHAR(255) NOT NULL,
+--   `parametros_json` JSON NOT NULL,
+--   `usuario_criador` INT NOT NULL,
+--   `data_criacao` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--   `data_ultima_edicao` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--   `excluido` TINYINT DEFAULT 0 
+-- );
 
-CREATE TABLE `produto_imagem` (
-  `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `produto_id` INT NOT NULL,
-  `url_imagem` VARCHAR(500) NOT NULL,
-  `ordem` INT DEFAULT 1,
-  `destaque` TINYINT DEFAULT 1,
-  `data_upload` DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+-- CREATE TABLE `produto_imagem` (
+--   `id` INT PRIMARY KEY AUTO_INCREMENT,
+--   `produto_id` INT NOT NULL,
+--   `url_imagem` VARCHAR(500) NOT NULL,
+--   `ordem` INT DEFAULT 1,
+--   `destaque` TINYINT DEFAULT 1,
+--   `data_upload` DATETIME DEFAULT CURRENT_TIMESTAMP
+-- );
 
 -- ===================================
 -- DEFINIÇÃO DAS CHAVES ESTRANGEIRAS (FOREIGN KEYS)
