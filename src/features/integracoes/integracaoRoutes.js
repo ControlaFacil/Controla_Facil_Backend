@@ -1,10 +1,10 @@
 const express = require('express');
 
-const autenticar = require('../middlewares/autenticar');
+const autenticar = require('../../middlewares/autenticar');
 
 const router = express.Router();
 
-const integracaoController = require('../controllers/integracaoController');
+const integracaoController = require('./integracaoController');
 
 
 /**

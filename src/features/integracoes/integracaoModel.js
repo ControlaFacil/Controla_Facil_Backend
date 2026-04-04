@@ -1,6 +1,6 @@
 // // O modelo integracaoModel é responsável por interagir com o banco de dados para operações relacionadas as integrações.
 
-const { pool, query } = require("../config/db");
+const { pool, query } = require("../../config/db");
 
 const integracaoModel = {
   async inserir({ nome }) {

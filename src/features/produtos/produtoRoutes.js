@@ -240,9 +240,8 @@
 
 const express = require('express');
 
-const produtoController = require('../controllers/produtoController');  
-
-const autenticar = require('../middlewares/autenticar');
+const produtoController = require("./produtoController");
+const autenticar = require("../../middlewares/autenticar");
 
 const router = express.Router();
 

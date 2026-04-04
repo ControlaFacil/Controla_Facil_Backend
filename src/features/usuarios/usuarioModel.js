@@ -1,6 +1,6 @@
 // O modelo usuarioModel é responsável por interagir com o banco de dados para operações relacionadas aos usuários.
 
-const { pool, query } = require("../config/db");
+const { pool, query } = require("../../config/db");
 
 const usuarioModel = {
   // Inserir Usuario

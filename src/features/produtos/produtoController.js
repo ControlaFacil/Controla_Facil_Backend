@@ -1,6 +1,6 @@
 // O produtoController é responsável por gerenciar as operações relacionadas aos produtos, como inserção, atualização e exclusão de dados.
 
-const produtoModel = require("../models/produtoModel");
+const produtoModel = require("./produtoModel");
 
 const produtoController = {
   async inserirProduto(req, res) {

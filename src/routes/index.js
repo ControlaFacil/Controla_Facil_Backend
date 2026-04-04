@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const usuarioRoutes = require('./usuarioRoutes');
-const integracoesRoutes = require('./integracaoRoutes');
-const categoriaProdutoRoutes = require('./categoriaProdutoRoutes');
-const tipoProdutoRoutes = require('./tipoProdutoRoutes');
-const modeloProdutoRoutes = require('./modeloProdutoRoutes');
-const produtoRoutes = require('./produtoRoutes');
+const usuarioRoutes = require('../features/usuarios/usuarioRoutes');
+const integracoesRoutes = require('../features/integracoes/integracaoRoutes');
+const categoriaProdutoRoutes = require('../features/categorias/categoriaProdutoRoutes');
+const tipoProdutoRoutes = require('../features/tipos/tipoProdutoRoutes');
+const modeloProdutoRoutes = require('../features/modelos/modeloProdutoRoutes');
+const produtoRoutes = require('../features/produtos/produtoRoutes');
 
 router.use(usuarioRoutes);
 router.use(integracoesRoutes);

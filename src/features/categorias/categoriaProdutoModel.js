@@ -1,6 +1,6 @@
 // O modelo categoriaProduto é responsável por interagir com o banco de dados para operações relacionadas as categorias de produtos.
 
-const { pool, query } = require("../config/db");
+const { pool, query } = require("../../config/db");
 
 const categoriaProduto = {
     async inserir({nome}) {

@@ -1,6 +1,6 @@
 // O tipoProdutoController é responsável por gerenciar as operações relacionadas aos tipos de produtos, como inserção, atualização e exclusão de dados.
 
-const tipoProdutoModel = require("../models/tipoProdutoModel");
+const tipoProdutoModel = require("./tipoProdutoModel");
 
 const tipoProdutoController = {
   async inserirTipoProduto(req, res) {

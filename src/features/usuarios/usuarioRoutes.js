@@ -1,9 +1,9 @@
 const express = require('express');
 
-const autenticar = require('../middlewares/autenticar');
+const autenticar = require('../../middlewares/autenticar');
 const router = express.Router(); // Cria um objeto router
 
-const usuarioController = require('../controllers/usuarioController');
+const usuarioController = require('./usuarioController');
 
 /**
  * @swagger

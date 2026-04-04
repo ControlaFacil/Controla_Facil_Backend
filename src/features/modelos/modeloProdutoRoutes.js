@@ -116,9 +116,9 @@
 
 const express = require("express");
 
-const autenticar = require("../middlewares/autenticar");
+const autenticar = require("../../middlewares/autenticar");
 
-const modeloProdutoController = require("../controllers/modeloProdutoController");
+const modeloProdutoController = require("./modeloProdutoController");
 
 const router = express.Router();
 

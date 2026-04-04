@@ -1,18 +1,18 @@
 const express = require('express');
 
-const autenticar = require('../middlewares/autenticar');
+const autenticar = require('../../middlewares/autenticar');
 
 const router = express.Router();
 
-const tipoProdutoController = require('../controllers/tipoProdutoController');
+const categoriaProdutoController = require('./categoriaProdutoController');
 
 /**
  * @swagger
- * /tipo-produto:
+ * /categoria-produto:
  *   post:
- *     summary: Cria um novo tipo de produto e vincula categorias
+ *     summary: Cria uma nova categoria de produto
  *     tags:
- *       - TipoProduto
+ *       - CategoriaProduto
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -24,29 +24,33 @@ const tipoProdutoController = require('../controllers/tipoProdutoController');
  *             properties:
  *               nome:
  *                 type: string
- *                 example: "Caderno"
- *               categoriaProdutoId:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 example: [1, 2]
+ *                 example: "Escolares"
+ *               usuario_criador:
+ *                 type: integer
+ *                 nullable: true
+ *                 example: 1
  *             required:
  *               - nome
  *     responses:
  *       201:
- *         description: Tipo de produto criado com sucesso
+ *         description: Categoria criada com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 tipoProduto:
+ *                 data:
  *                   type: object
  *                   properties:
  *                     id:
  *                       type: integer
  *                     nome:
  *                       type: string
+ *                     usuario_criador:
+ *                       type: integer
+ *                       nullable: true
+ *                     excluido:
+ *                       type: integer
  *                 sucesso:
  *                   type: boolean
  *                   example: true
@@ -63,7 +67,7 @@ const tipoProdutoController = require('../controllers/tipoProdutoController');
  *                   type: boolean
  *                   example: false
  *       500:
- *         description: Erro interno ao criar tipo de produto
+ *         description: Erro interno ao criar categoria
  *         content:
  *           application/json:
  *             schema:
@@ -78,16 +82,14 @@ const tipoProdutoController = require('../controllers/tipoProdutoController');
 
 /**
  * @swagger
- * /tipo-produto:
+ * /categoria-produto:
  *   get:
- *     summary: Lista todos os tipos de produto
+ *     summary: Lista todas as categorias de produto
  *     tags:
- *       - TipoProduto
- *     security:
- *       - bearerAuth: []
+ *       - CategoriaProduto
  *     responses:
  *       200:
- *         description: Lista de tipos de produto
+ *         description: Lista de categorias de produto
  *         content:
  *           application/json:
  *             schema:
@@ -102,11 +104,16 @@ const tipoProdutoController = require('../controllers/tipoProdutoController');
  *                         type: integer
  *                       nome:
  *                         type: string
+ *                       usuario_criador:
+ *                         type: integer
+ *                         nullable: true
+ *                       excluido:
+ *                         type: integer
  *                 sucesso:
  *                   type: boolean
  *                   example: true
  *       500:
- *         description: Erro interno ao listar tipos de produto
+ *         description: Erro interno ao listar categorias
  *         content:
  *           application/json:
  *             schema:
@@ -119,7 +126,7 @@ const tipoProdutoController = require('../controllers/tipoProdutoController');
  *                   example: false
  */
 
-router.post('/tipo-produto', tipoProdutoController.inserirTipoProduto);
-router.get('/tipo-produto', tipoProdutoController.listarTiposProduto);
+router.post('/categoria-produto', categoriaProdutoController.inserirCategoriaProduto);
+router.get('/categoria-produto', categoriaProdutoController.listarCategoriasProduto);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 // O modeloProdutoController é responsável por gerenciar as operações relacionadas aos modelos de produtos, como inserção, atualização e exclusão de dados.
 
-const modeloProdutoModel = require("../models/modeloProdutoModel");
+const modeloProdutoModel = require("./modeloProdutoModel");
 
 const modeloProdutoController = {
   async inserirModeloProduto(req, res) {

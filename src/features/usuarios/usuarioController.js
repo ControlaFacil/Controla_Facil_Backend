@@ -1,9 +1,9 @@
 // O usuarioController é responsável por gerenciar as operações relacionadas a clientes, como inserção, atualização e exclusão de dados.
 
-const Usuario = require("../models/usuarioModel");
-const { gerarToken } = require("../utils/token");
-const { gerarHash } = require("../utils/hash");
-const { conferirHash } = require("../utils/hash");
+const Usuario = require("./usuarioModel");
+const { gerarToken } = require("../../utils/token");
+const { gerarHash } = require("../../utils/hash");
+const { conferirHash } = require("../../utils/hash");
 
 const usuarioController = {
   // Inserir usuario

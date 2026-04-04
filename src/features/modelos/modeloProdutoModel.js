@@ -1,6 +1,6 @@
 // O modelo modeloProduto é responsável por interagir com o banco de dados para operações relacionadas aos modelos de produtos.
 
-const { pool, query } = require("../config/db");
+const { pool, query } = require("../../config/db");
 
 const modeloProdutoModel = {
   async inserir({ nome, tipo_produto_id }) {

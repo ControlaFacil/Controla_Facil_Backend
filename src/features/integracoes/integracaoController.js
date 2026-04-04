@@ -1,6 +1,6 @@
 // O integracaoController é responsável por gerenciar as operações relacionadas a integrações, como inserção, atualização e exclusão de dados.
 const axios = require("axios");
-const integracaoModel = require("../models/integracaoModel");
+const integracaoModel = require("./integracaoModel");
 require("dotenv").config();
 
 const integracaoController = {

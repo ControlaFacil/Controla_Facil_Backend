@@ -1,6 +1,6 @@
 // O integracaoController é responsável por gerenciar as operações relacionadas a integrações, como inserção, atualização e exclusão de dados.
 
-const categoriaProdutoModel = require("../models/categoriaProdutoModel");
+const categoriaProdutoModel = require("./categoriaProdutoModel");
 
 const categoriaProdutoController = {
     async inserirCategoriaProduto(req, res) {
