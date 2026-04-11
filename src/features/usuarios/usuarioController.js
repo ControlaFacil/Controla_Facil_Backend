@@ -11,7 +11,6 @@ const usuarioController = {
     const { nome, email, cpf_cnpj, celular, cargo, senha } = req.body;
 
     // Validação dos dados obrigatórios
-    debugger
     if (!nome || !email || !cpf_cnpj || !celular || !cargo || !senha) {
       return res.status(400).json({
         error: "Dados obrigatórios não foram preenchidos",
@@ -47,7 +46,7 @@ const usuarioController = {
         cpf_cnpj,
         celular,
         cargo,
-        senhaHash,
+        senha_hash: senhaHash,
       });
 
       return res.status(201).json({
@@ -127,7 +126,7 @@ const usuarioController = {
           .json({ error: "Usuário não encontrado", sucesso: false });
       }
 
-      const senhaCorreta = await conferirHash(senha, usuario.senhaHash);
+      const senhaCorreta = await conferirHash(senha, usuario.senha_hash);
       if (!senhaCorreta) {
         return res
           .status(401)

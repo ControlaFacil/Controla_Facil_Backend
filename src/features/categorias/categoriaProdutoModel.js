@@ -3,14 +3,14 @@
 const { pool, query } = require("../../config/db");
 
 const categoriaProduto = {
-    async inserir({nome}) {
+    async inserir({nome, usuario_criador_id}) {
         try {
             const sql = `
-                INSERT INTO categoria_produto (nome)
-                VALUES (?);
+                INSERT INTO categoria_produto (nome, usuario_criador_id)
+                VALUES (?, ?);
             `; 
             
-            const params = [nome];
+            const params = [nome, usuario_criador_id];
 
             const result = await query(sql, params);
 

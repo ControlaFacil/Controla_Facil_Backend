@@ -5,12 +5,12 @@ const produtoModel = require("./produtoModel");
 const produtoController = {
   async inserirProduto(req, res) {
     try {
-      const { nome, sku, descricao, preco, modelo_produto_id } = req.body;
+      const { nome, sku, descricao, preco, categoria_id, usuario_criador_id } = req.body;
 
-      if (!nome || !sku || !preco || !modelo_produto_id) {
+      if (!nome || !sku || !preco || !categoria_id) {
         return res.status(400).json({
           error:
-            "'nome', 'sku', 'preco' e 'modelo_produto_id' são obrigatórios",
+            "'nome', 'sku', 'preco' e 'categoria_id' são obrigatórios",
           sucesso: false,
         });
       }
@@ -20,7 +20,8 @@ const produtoController = {
         sku,
         descricao,
         preco,
-        modelo_produto_id,
+        categoria_id,
+        usuario_criador_id: usuario_criador_id || req.usuario?.id || 1, // Fallback para dev
       });
 
       res.status(201).json({ produto, sucesso: true });

@@ -4,14 +4,14 @@ const { pool, query } = require("../../config/db");
 
 const usuarioModel = {
   // Inserir Usuario
-  async inserir({ nome, email, cpf_cnpj, celular, cargo, senhaHash }) {
+  async inserir({ nome, email, cpf_cnpj, celular, cargo, senha_hash }) {
     try {
       const sql = `
                 INSERT INTO usuarios (nome, email, cpf_cnpj, celular, cargo, senha_hash)
                 VALUES (?, ?, ?, ?, ?, ?);
             `;
 
-      const params = [nome, email, cpf_cnpj, celular, cargo, senhaHash];
+      const params = [nome, email, cpf_cnpj, celular, cargo, senha_hash];
       const result = await query(sql, params);
 
       const usuario = await query("SELECT * FROM usuarios WHERE id = ?", [
@@ -110,13 +110,16 @@ const usuarioModel = {
   },
 
   async existeId(id) {
-    await poolConnect;
-    const result = await pool
-      .request()
-      .input("id", sql.Int, id)
-      .query("SELECT 1 AS existe FROM Usuario WHERE id = @id");
-
-    return result.recordset.length > 0; // Retorna true se existir, false caso contrário
+    try {
+      const result = await query(
+        "SELECT 1 AS existe FROM usuarios WHERE id = ?",
+        [id]
+      );
+      return result.length > 0;
+    } catch (error) {
+      console.error("Erro ao verificar ID de usuário:", error);
+      throw new Error("Erro ao verificar ID de usuário: " + error);
+    }
   },
 };
 

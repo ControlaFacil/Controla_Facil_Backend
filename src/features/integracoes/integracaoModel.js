@@ -36,10 +36,10 @@ const integracaoModel = {
 
       const expires_at = new Date(Date.now() + data.expires_in * 1000 );
 
-      const sql = `INSERT INTO integracao_configuracao (integracao_id, access_token, refresh_token, mercado_livre_user_id, expires_at) VALUES (?, ?, ?, ?, ?);`;
+      const sql = `INSERT INTO integracao_configuracao (usuario_id, access_token, refresh_token, mercado_livre_user_id, expires_at) VALUES (?, ?, ?, ?, ?);`;
 
       const params = [
-        1,
+        data.usuario_id || 1, // Fallback para usuario_id
         data.access_token,
         data.refresh_token,
         data.user_id,
