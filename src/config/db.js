@@ -1,10 +1,21 @@
-// Importa as bibliotecas mysql2 e dotenv
 const mysql = require("mysql2/promise");
-require("dotenv").config();
+const path = require("path");
+
+// Carrega o .env da raiz do projeto, independente de onde o processo foi iniciado
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 
 // Define as configurações da conexão com o MySQL
-const connectionString = process.env.DATABASE_URL;
-const pool = mysql.createPool(connectionString);
+const pool = mysql.createPool({
+  host: process.env.DB_SERVER || process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  waitForConnections: true,
+  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
+  queueLimit: 0,
+  timezone: "Z",
+  decimalNumbers: true,
+});
 
 // Cria uma pool de conexões
 async function query(sql, params) {

@@ -4,36 +4,36 @@ const { pool, query } = require("../../config/db");
 
 const usuarioModel = {
   // Inserir Usuario
-  async inserir({ nome, email, cpf, celular, cargo, senhaHash }) {
+  async inserir({ nome, email, cpf_cnpj, celular, cargo, senhaHash }) {
     try {
       const sql = `
-                INSERT INTO usuarios (nome, email, cpf, celular, cargo, senhaHash)
+                INSERT INTO usuarios (nome, email, cpf_cnpj, celular, cargo, senha_hash)
                 VALUES (?, ?, ?, ?, ?, ?);
             `;
 
-      const params = [nome, email, cpf, celular, cargo, senhaHash];
+      const params = [nome, email, cpf_cnpj, celular, cargo, senhaHash];
       const result = await query(sql, params);
 
       const usuario = await query("SELECT * FROM usuarios WHERE id = ?", [
         result.insertId,
       ]);
 
-      return usuario[0];
+      return usuario[0].id;
     } catch (error) {
       console.error("Erro ao inserir usuário:", error);
       throw new Error("Erro ao inserir usuário: " + error);
     }
   },
 
-  async atualizar({ id, nome, email, cpf, celular, cargo }) {
+  async atualizar({ id, nome, email, cpf_cnpj, celular, cargo }) {
     try {
       const sql = `
         UPDATE usuarios 
-        SET nome = ?, email = ?, cpf = ?, celular = ?, cargo = ?
+        SET nome = ?, email = ?, cpf_cnpj = ?, celular = ?, cargo = ?
         WHERE id = ?;;
       `;
 
-      const params = [nome, email, cpf, celular, cargo, id];
+      const params = [nome, email, cpf_cnpj, celular, cargo, id];
 
       await query(sql, params);
 
@@ -49,7 +49,7 @@ const usuarioModel = {
   async listarUsuarios() {
     try {
       const usuarios = await query(
-        "SELECT id, nome, email, cpf, celular, cargo FROM usuarios"
+        "SELECT id, nome, email, cpf_cnpj, celular, cargo FROM usuarios"
       );
       return usuarios;
     } catch (error) {
@@ -61,7 +61,7 @@ const usuarioModel = {
   async buscarPorId(id) {
     try {
       const result = await query(
-        "SELECT id, nome, email, cpf, celular, cargo FROM usuarios WHERE id = ?",
+        "SELECT id, nome, email, cpf_cnpj, celular, cargo FROM usuarios WHERE id = ?",
         [id]
       );
       return result[0];
@@ -83,11 +83,11 @@ const usuarioModel = {
     }
   },
 
-  async existeCpf(cpf) {
+  async existeCpf(cpf_cnpj) {
     try {
       const result = await query(
-        "SELECT 1 AS existe FROM usuarios WHERE cpf = ?",
-        [cpf]
+        "SELECT 1 AS existe FROM usuarios WHERE cpf_cnpj = ?",
+        [cpf_cnpj]
       );
       return result.length > 0;
     } catch (error) {

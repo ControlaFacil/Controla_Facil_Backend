@@ -3,7 +3,7 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 1. Tabela de Usuários
-CREATE TABLE IF NOT EXISTS `usuario` (
+CREATE TABLE IF NOT EXISTS `usuarios` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
 
     `nome` VARCHAR(255) NOT NULL,

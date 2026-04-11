@@ -8,10 +8,11 @@ const { conferirHash } = require("../../utils/hash");
 const usuarioController = {
   // Inserir usuario
   async inserirUsuario(req, res) {
-    const { nome, email, cpf, celular, cargo, senha } = req.body;
+    const { nome, email, cpf_cnpj, celular, cargo, senha } = req.body;
 
     // Validação dos dados obrigatórios
-    if (!nome || !email || !cpf || !celular || !cargo || !senha) {
+    debugger
+    if (!nome || !email || !cpf_cnpj || !celular || !cargo || !senha) {
       return res.status(400).json({
         error: "Dados obrigatórios não foram preenchidos",
         sucesso: false,
@@ -20,10 +21,10 @@ const usuarioController = {
 
     try {
       // Verificar se o CPF já existe
-      const cpfExiste = await Usuario.existeCpf(cpf);
+      const cpfExiste = await Usuario.existeCpf(cpf_cnpj);
       if (cpfExiste) {
         return res.status(400).json({
-          error: "CPF já cadastrado",
+          error: "CPF ou CNPJ já cadastrado",
           sucesso: false,
         });
       }
@@ -43,7 +44,7 @@ const usuarioController = {
       const usuarioCadastrado = await Usuario.inserir({
         nome,
         email,
-        cpf,
+        cpf_cnpj,
         celular,
         cargo,
         senhaHash,
@@ -65,7 +66,7 @@ const usuarioController = {
   },
 
   async atualizarUsuario(req, res) {
-    const { id, nome, email, cpf, celular, cargo } = req.body;
+    const { id, nome, email, cpf_cnpj, celular, cargo } = req.body;
 
     if (!id) {
       return res.status(400).json({
@@ -88,7 +89,7 @@ const usuarioController = {
         id,
         nome: nome || usuarioExistente.nome,
         email: email || usuarioExistente.email,
-        cpf: cpf || usuarioExistente.cpf,
+        cpf_cnpj: cpf_cnpj || usuarioExistente.cpf_cnpj,
         celular: celular || usuarioExistente.celular,
         cargo: cargo || usuarioExistente.cargo,
       });
@@ -225,7 +226,7 @@ const usuarioController = {
           id: usuario.id,
           nome: usuario.nome,
           email: usuario.email,
-          cpf: usuario.cpf,
+          cpf_cnpj: usuario.cpf_cnpj,
           celular: usuario.celular,
           cargo: usuario.cargo,
         },
