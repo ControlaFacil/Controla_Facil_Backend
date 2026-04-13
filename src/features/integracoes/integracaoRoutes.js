@@ -14,6 +14,6 @@ const integracaoController = require('./integracaoController');
  *   description: API para gerenciamento de integrações
  */
 
-router.get('/integracoes/callback', integracaoController.mercadoLivreCallback);
+router.get('/integracoes/auth/mercadolivre', integracaoController.authMercadoLivre);
 
 module.exports = router;

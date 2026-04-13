@@ -1,13 +1,16 @@
 // O integracaoController é responsável por gerenciar as operações relacionadas a integrações, como inserção, atualização e exclusão de dados.
 const axios = require("axios");
 const integracaoModel = require("./integracaoModel");
-require("dotenv").config();
+require("dotenv")
 
 const integracaoController = {
-  async mercadoLivreCallback(req, res) {
+
+
+
+  async authMercadoLivre(req, res) {
     const { code } = req.query;
     if (!code) {
-      return res.redirect("https://controlafacil.vercel.app/integracao-erro");
+      return res.redirect("https://controlafacil.vercel.app/integracao-erro"); // Substituir
     }
 
     try {
@@ -15,10 +18,10 @@ const integracaoController = {
          "https://api.mercadolibre.com/oauth/token",
          {
            grant_type: "authorization_code",
-           client_id: "5137782277166166",
-           client_secret: "g1naoZfuSzwlMuz40ZRmFia6rPfIZF7Q",
+           client_id: process.env.ML_CLIENT_ID,
+           client_secret: process.env.ML_CLIENT_SECRET,
            code,
-           redirect_uri: "https://controlafacilbackend-production.up.railway.app/api/integracoes/callback",
+           redirect_uri: process.env.ML_REDIRECT_URI, // URL que será cadastrada no ML - Após subir no servidor
          },
          {
            headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -28,12 +31,12 @@ const integracaoController = {
       await integracaoModel.salvarDadosMercadoLivre(response.data);
 
       return res.redirect(
-        "https://controlafacil.vercel.app/integracao-sucesso"
+        "https://controlafacil.vercel.app/integracao-sucesso" // Substituir
       );
 
     } catch (error) {
       res.redirect(
-        "https://controlafacil.vercel.app/integracao-erro"
+        "https://controlafacil.vercel.app/integracao-erro" // Substituir
       );
     }
   },
