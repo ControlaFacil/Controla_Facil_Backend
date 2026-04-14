@@ -14,7 +14,9 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
     `senha_hash` TEXT NOT NULL,
     `data_criacao` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `excluido` TINYINT(1) DEFAULT 0,
-    `ultimo_login` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `ultimo_login` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `verificado` BOOLEAN DEFAULT FALSE,
+    `token_verificacao` VARCHAR(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 2. Tabela de Configuração de Integração (Mercado Livre)

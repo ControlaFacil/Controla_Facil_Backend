@@ -1,3 +1,4 @@
+import { enviarEmailVerificacao } from "./utils/email";
 const x = [
     {
         "id": "BRAND",
@@ -3709,4 +3710,6 @@ function getRequiredAttributes() {
    console.log(requireds);
 }
 
-getRequiredAttributes();
+enviarEmailVerificacao();
+
+//getRequiredAttributes();
