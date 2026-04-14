@@ -1,4 +1,4 @@
-import { enviarEmailVerificacao } from "./utils/email";
+const { enviarEmailVerificacao } = require("./utils/email");
 const x = [
     {
         "id": "BRAND",
@@ -3710,6 +3710,8 @@ function getRequiredAttributes() {
    console.log(requireds);
 }
 
-enviarEmailVerificacao();
+enviarEmailVerificacao().then(() => {
+    console.log("Email enviado com sucesso!")
+});
 
 //getRequiredAttributes();
