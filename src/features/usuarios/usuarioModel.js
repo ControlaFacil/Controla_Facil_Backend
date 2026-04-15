@@ -1,24 +1,29 @@
 // O modelo usuarioModel é responsável por interagir com o banco de dados para operações relacionadas aos usuários.
 
 const { pool, query } = require("../../config/db");
+const emailToken = require("../../utils/email")
 
 const usuarioModel = {
   // Inserir Usuario
   async inserir({ nome, email, cpf_cnpj, celular, cargo, senha_hash }) {
     try {
+
+      // Criar token de verificação
+      const token = emailToken.tokenVerificacao();
+      
       const sql = `
-                INSERT INTO usuarios (nome, email, cpf_cnpj, celular, cargo, senha_hash)
-                VALUES (?, ?, ?, ?, ?, ?);
+                INSERT INTO usuarios (nome, email, cpf_cnpj, celular, cargo, senha_hash, token_verificacao, token_expira)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?);
             `;
 
-      const params = [nome, email, cpf_cnpj, celular, cargo, senha_hash];
+      const params = [nome, email, cpf_cnpj, celular, cargo, senha_hash, token.token, token.tokenExpira];
       const result = await query(sql, params);
 
       const usuario = await query("SELECT * FROM usuarios WHERE id = ?", [
         result.insertId,
       ]);
-
-      return usuario[0].id;
+      
+      return {id: result.insertId, tokenVerificacao: token.token}
     } catch (error) {
       console.error("Erro ao inserir usuário:", error);
       throw new Error("Erro ao inserir usuário: " + error);

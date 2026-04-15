@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
+const crypto = require("crypto");
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -10,8 +11,9 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-function gerarHtmlVerificacao(userName = "Usuário", verificationUrl = "#") {
-  return `
+const email = {
+  gerarHtmlVerificacao(userName = "Usuário", verificationUrl = "#") {
+    return `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -132,15 +134,28 @@ function gerarHtmlVerificacao(userName = "Usuário", verificationUrl = "#") {
 </body>
 </html>
   `;
-}
+  },
 
-async function enviarEmailVerificacao(to = 'guilherme.galdino@uscsonline.com.br', userName = 'Usuário', verificationUrl = '#') {
+  async enviarEmailVerificacao(to = 'guilherme.galdino@uscsonline.com.br', userName = 'Usuário', verificationUrl = '#') {
     await transporter.sendMail({
-        from: '"Controla Fácil" <controlafaciluscs@gmail.com>',
-        to,
-        subject: "✅ Verifique seu e-mail - Controla Fácil",
-        html: gerarHtmlVerificacao(userName, verificationUrl)
+      from: '"Controla Fácil" <controlafaciluscs@gmail.com>',
+      to,
+      subject: "✅ Verifique seu e-mail - Controla Fácil",
+      html: this.gerarHtmlVerificacao(userName, verificationUrl)
     });
+  },
+
+  tokenVerificacao() { 
+    try {
+      const token = crypto.randomBytes(32).toString("hex");
+      const dataExpiracao = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+      return { token, tokenExpira: dataExpiracao };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
-module.exports = { enviarEmailVerificacao };
+
+module.exports = email;
