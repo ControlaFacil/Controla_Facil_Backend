@@ -1,27 +1,18 @@
 // O modelo usuarioModel é responsável por interagir com o banco de dados para operações relacionadas aos usuários.
 
 const { pool, query } = require("../../config/db");
-const emailToken = require("../../utils/email")
 
 const usuarioModel = {
   // Inserir Usuario
-  async inserir({ nome, email, cpf_cnpj, celular, cargo, senha_hash }) {
+  async inserir({ nome, email, cpf_cnpj, celular, cargo, senha_hash, token_verificacao, token_expira }) {
     try {
-
-      // Criar token de verificação
-      const token = emailToken.tokenVerificacao();
-      
       const sql = `
                 INSERT INTO usuarios (nome, email, cpf_cnpj, celular, cargo, senha_hash, token_verificacao, token_expira)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
             `;
 
-      const params = [nome, email, cpf_cnpj, celular, cargo, senha_hash, token.token, token.tokenExpira];
+      const params = [nome, email, cpf_cnpj, celular, cargo, senha_hash, token_verificacao, token_expira];
       const result = await query(sql, params);
-
-      const usuario = await query("SELECT * FROM usuarios WHERE id = ?", [
-        result.insertId,
-      ]);
       
       return {id: result.insertId, tokenVerificacao: token.token}
     } catch (error) {
@@ -126,6 +117,27 @@ const usuarioModel = {
       throw new Error("Erro ao verificar ID de usuário: " + error);
     }
   },
+
+  async buscarPorTokenVerificacao(token_verificacao) {
+    try {
+      const result = await query("SELECT * FROM usuarios WHERE token_verificacao = ?", [token_verificacao]);
+      return result[0];
+    } catch (error) {
+      console.error("Erro ao buscar usuário por token:", error);
+      throw new Error("Erro ao buscar usuário por token: " + error);
+    }
+  },
+
+  async ativarConta(token_verificacao) {
+    try {
+      const result = await query("UPDATE usuarios SET verificado = 1, token_verificacao = NULL, token_expira = NULL WHERE token_verificacao = ?", [token_verificacao]);
+      return result;
+    } catch (error) {
+      console.error("Erro ao ativar conta:", error);
+      throw new Error("Erro ao ativar conta: " + error);
+    }
+  },
+
 };
 
 module.exports = usuarioModel;

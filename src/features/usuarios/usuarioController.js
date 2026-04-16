@@ -4,6 +4,7 @@ const Usuario = require("./usuarioModel");
 const { gerarToken } = require("../../utils/token");
 const { gerarHash } = require("../../utils/hash");
 const { conferirHash } = require("../../utils/hash");
+const emailVerificacao = require("../../utils/email")
 
 const usuarioController = {
   // Inserir usuario
@@ -19,7 +20,6 @@ const usuarioController = {
     }
 
     try {
-      // Verificar se o CPF já existe
       const cpfExiste = await Usuario.existeCpf(cpf_cnpj);
       if (cpfExiste) {
         return res.status(400).json({
@@ -28,7 +28,6 @@ const usuarioController = {
         });
       }
 
-      // Verificar se o email já existe
       const emailExiste = await Usuario.existeEmail(email);
       if (emailExiste) {
         return res.status(400).json({
@@ -38,8 +37,8 @@ const usuarioController = {
       }
 
       const senhaHash = await gerarHash(senha);
+      const emailToken = emailVerificacao.tokenVerificacao();
 
-      // Chamar método do modelo para inserir o usuário
       const usuarioCadastrado = await Usuario.inserir({
         nome,
         email,
@@ -47,7 +46,12 @@ const usuarioController = {
         celular,
         cargo,
         senha_hash: senhaHash,
+        token_verificacao: emailToken.token,
+        token_expira: emailToken.tokenExpira,
       });
+
+      // Enviar e-mail de verificação
+      await emailVerificacao.enviarEmailVerificacao(email, nome);
 
       return res.status(201).json({
         message: "Usuário inserido com sucesso",
@@ -124,6 +128,12 @@ const usuarioController = {
         return res
           .status(404)
           .json({ error: "Usuário não encontrado", sucesso: false });
+      }
+
+      if (usuario.verificado != 1 || usuario.verificado == false) {
+        return res
+          .status(403)
+          .json({ error: "Email não validado", sucesso: false });
       }
 
       const senhaCorreta = await conferirHash(senha, usuario.senha_hash);
