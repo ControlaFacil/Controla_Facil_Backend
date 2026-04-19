@@ -13,8 +13,12 @@ const usuarioModel = {
 
       const params = [nome, email, cpf_cnpj, celular, cargo, senha_hash, token_verificacao, token_expira];
       const result = await query(sql, params);
+
+      const usuario = await query("SELECT * FROM usuarios WHERE id = ?", [
+        result.insertId,
+      ]);
       
-      return {id: result.insertId, tokenVerificacao: token.token}
+      return {id: usuario[0].id, tokenVerificacao: usuario[0].token_verificacao}
     } catch (error) {
       console.error("Erro ao inserir usuário:", error);
       throw new Error("Erro ao inserir usuário: " + error);

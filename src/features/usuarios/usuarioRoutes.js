@@ -388,6 +388,7 @@ const usuarioController = require('./usuarioController');
 
 router.post('/usuarios', usuarioController.inserirUsuario);
 router.post('/usuarios/login', usuarioController.login);
+router.get('/usuarios/verificar-email/:token', usuarioController.verificarEmail);
 router.get('/usuarios', autenticar, usuarioController.listarUsuarios);
 router.get('/usuarios/me', autenticar, usuarioController.dadosUsuarioLogado);
 router.get('/usuarios/:id', autenticar, usuarioController.buscarPorId);

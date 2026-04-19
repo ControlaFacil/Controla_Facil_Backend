@@ -10,7 +10,6 @@ const usuarioController = {
   // Inserir usuario
   async inserirUsuario(req, res) {
     const { nome, email, cpf_cnpj, celular, cargo, senha } = req.body;
-
     // Validação dos dados obrigatórios
     if (!nome || !email || !cpf_cnpj || !celular || !cargo || !senha) {
       return res.status(400).json({
@@ -50,8 +49,8 @@ const usuarioController = {
         token_expira: emailToken.tokenExpira,
       });
 
-      // Enviar e-mail de verificação
-      await emailVerificacao.enviarEmailVerificacao(email, nome);
+      const urlVerificacao = `http://localhost:5000/api/usuarios/verificar-email/${emailToken.token}`;
+      await emailVerificacao.enviarEmailVerificacao(email, nome, urlVerificacao);
 
       return res.status(201).json({
         message: "Usuário inserido com sucesso",
@@ -130,17 +129,17 @@ const usuarioController = {
           .json({ error: "Usuário não encontrado", sucesso: false });
       }
 
-      if (usuario.verificado != 1 || usuario.verificado == false) {
-        return res
-          .status(403)
-          .json({ error: "Email não validado", sucesso: false });
-      }
-
       const senhaCorreta = await conferirHash(senha, usuario.senha_hash);
       if (!senhaCorreta) {
         return res
           .status(401)
           .json({ error: "Senha incorreta", sucesso: false });
+      }
+
+      if (usuario.verificado != 1 || usuario.verificado == false) {
+        return res
+          .status(403)
+          .json({ error: "Email não validado", sucesso: false });
       }
 
       const token = gerarToken({
@@ -249,6 +248,44 @@ const usuarioController = {
       });
     }
   },
+
+  async verificarEmail(req, res) { 
+    try {
+      const { token } = req.params;
+
+      if (!token) {
+        return res.status(400).json({ error: "Token não fornecido.", sucesso: false });
+      }
+
+      const usuario = await Usuario.buscarPorTokenVerificacao(token);
+
+      if (!usuario) {
+        return res.status(404).json({ error: "Token inválido ou inexistente.", sucesso: false });
+      }
+
+      const tempoAtual = new Date();
+      const tempoExpiracao = new Date(usuario.token_expira);
+
+      if (tempoAtual > tempoExpiracao) {
+        return res.status(400).json({ error: "O token de verificação expirou. Solicite um novo envio.", sucesso: false });
+      }
+
+      await Usuario.ativarConta(token);
+
+      return res.status(200).json({
+        message: "E-mail verificado com sucesso! Sua conta foi ativada.",
+        sucesso: true,
+      });
+      
+    } catch (error) {
+      console.error("Erro ao verificar email:", error);
+      return res.status(500).json({
+        error: "Erro ao verificar email",
+        message: error.message,
+        sucesso: false,
+      });
+    }
+  }
 };
 
 module.exports = usuarioController;
