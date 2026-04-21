@@ -1,42 +1,50 @@
-const mysql = require("mysql2/promise");
+const sql = require("mssql");
 const path = require("path");
 
-// Carrega o .env da raiz do projeto, independente de onde o processo foi iniciado
 require("dotenv").config({ path: path.resolve(__dirname, "../../.env") });
 
-// Define as configurações da conexão com o MySQL
-const pool = mysql.createPool({
-  host: process.env.DB_SERVER || process.env.DB_HOST,
+const sqlConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  waitForConnections: true,
-  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
-  queueLimit: 0,
-  timezone: "Z",
-  decimalNumbers: true,
-});
+  server: process.env.DB_SERVER || process.env.DB_HOST,
+  pool: {
+    max: Number(process.env.DB_CONNECTION_LIMIT) || 10,
+    min: 0,
+    idleTimeoutMillis: 30000
+  },
+  options: {
+    encrypt: false, // Alterar para true se estiver usando Azure
+    trustServerCertificate: true // Permite certificados auto-assinados (útil no desenvolvimento local e conexões locais)
+  }
+};
 
-// Cria uma pool de conexões
-async function query(sql, params) {
+// Cria a pool de conexões em promise para ser utilizada através do projeto
+const poolPromise = new sql.ConnectionPool(sqlConfig)
+  .connect()
+  .then(pool => {
+    console.log("Conexão com o banco de dados (SQL Server) estabelecida com sucesso!");
+    return pool;
+  })
+  .catch(err => {
+    console.error("Falha ao conectar ao banco de dados:", err.message);
+    process.exit(1);
+  });
+
+// Função de query de conveniência
+async function query(sqlString) {
   try {
-    const [rows, fields] = await pool.execute(sql, params);
-    return rows;
+    const pool = await poolPromise;
+    // Atenção: O mssql não usa "?" como placeholders para parâmetros da mesma maneira que o mysql.
+    // O suporte completo a queries parametrizadas precisará de uso do "request.input('nome', valor)".
+    // Essa função servirá como base enquanto as outras partes (models) são ajustadas.
+    const result = await pool.request().query(sqlString);
+    return result.recordset; // Retorna as linhas equivalentes a 'rows' no mysql
   } catch (error) {
     console.error("Erro na execução da query:", error);
     throw error;
   }
 }
 
-(async () => {
-  try {
-    const connection = await pool.getConnection();
-    console.log("Conexão com o banco de dados estabelecida com sucesso!");
-    connection.release();
-  } catch (error) {
-    console.error("Falha ao conectar ao banco de dados:", error.message);
-  }
-})();
-
-// Exporta o pool e o módulo sql para uso nos models
-module.exports = { pool, query };
+// Exporta a pool (como promise) e a função query
+module.exports = { pool: poolPromise, query, sql };
