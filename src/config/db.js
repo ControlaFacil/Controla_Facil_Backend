@@ -7,19 +7,19 @@ const sqlConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  server: process.env.DB_SERVER || process.env.DB_HOST,
+  server: process.env.DB_SERVER,
+  port: parseInt(process.env.DB_PORT) || 1433,
   pool: {
-    max: Number(process.env.DB_CONNECTION_LIMIT) || 10,
+    max: 10,
     min: 0,
     idleTimeoutMillis: 30000
   },
   options: {
-    encrypt: false, // Alterar para true se estiver usando Azure
-    trustServerCertificate: true // Permite certificados auto-assinados (útil no desenvolvimento local e conexões locais)
+    encrypt: process.env.DB_ENCRYPT === "true", // true para Azure/Nuvem, false para local
+    trustServerCertificate: process.env.DB_TRUST_CERT === "true" // true para local
   }
 };
 
-// Cria a pool de conexões em promise para ser utilizada através do projeto
 const poolPromise = new sql.ConnectionPool(sqlConfig)
   .connect()
   .then(pool => {
