@@ -46,7 +46,7 @@ const usuarioController = {
         cargo,
         senha_hash: senhaHash,
         token_verificacao: emailToken.token,
-        token_expira: emailToken.tokenExpira,
+        token_expiracao: emailToken.tokenExpira,
       });
 
       const urlVerificacao = `http://localhost:5000/api/usuarios/verificar-email/${emailToken.token}`;
