@@ -5,6 +5,7 @@ const { gerarToken } = require("../../utils/token");
 const { gerarHash } = require("../../utils/hash");
 const { conferirHash } = require("../../utils/hash");
 const emailVerificacao = require("../../utils/email")
+require("dotenv").config();
 
 const usuarioController = {
   // Inserir usuario
@@ -49,7 +50,7 @@ const usuarioController = {
         token_expiracao: emailToken.tokenExpira,
       });
 
-      const urlVerificacao = `http://localhost:5000/api/usuarios/verificar-email/${emailToken.token}`;
+      const urlVerificacao = `${process.env.URL_API}/usuarios/verificar-email/${emailToken.token}`;
       await emailVerificacao.enviarEmailVerificacao(email, nome, urlVerificacao);
 
       return res.status(201).json({
@@ -249,41 +250,35 @@ const usuarioController = {
     }
   },
 
-  async verificarEmail(req, res) { 
+  async verificarEmail(req, res) {
+    const frontendUrl = process.env.URL_FRONTEND || "http://localhost:5173";
     try {
       const { token } = req.params;
 
       if (!token) {
-        return res.status(400).json({ error: "Token não fornecido.", sucesso: false });
+        return res.redirect(`${frontendUrl}/email-falha-validacao`);
       }
 
       const usuario = await Usuario.buscarPorTokenVerificacao(token);
 
       if (!usuario) {
-        return res.status(404).json({ error: "Token inválido ou inexistente.", sucesso: false });
+        return res.redirect(`${frontendUrl}/email-falha-validacao`);
       }
 
       const tempoAtual = new Date();
-      const tempoExpiracao = new Date(usuario.token_expira);
+      const tempoExpiracao = new Date(usuario.token_expiracao);
 
       if (tempoAtual > tempoExpiracao) {
-        return res.status(400).json({ error: "O token de verificação expirou. Solicite um novo envio.", sucesso: false });
+        return res.redirect(`${frontendUrl}/email-falha-validacao`);
       }
 
       await Usuario.ativarConta(token);
 
-      return res.status(200).json({
-        message: "E-mail verificado com sucesso! Sua conta foi ativada.",
-        sucesso: true,
-      });
-      
+      return res.redirect(`${frontendUrl}/email-validado`);
+
     } catch (error) {
       console.error("Erro ao verificar email:", error);
-      return res.status(500).json({
-        error: "Erro ao verificar email",
-        message: error.message,
-        sucesso: false,
-      });
+      return res.redirect(`${frontendUrl}/email-falha-validacao`);
     }
   }
 };

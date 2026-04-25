@@ -15,8 +15,17 @@ const options = {
                 url: 'http://localhost:5000/api',
             },
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
     },
-    apis: ['./src/routes/*.js'], // Caminho onde estão as rotas com os comentários Swagger
+    apis: ['./src/routes/*.js', './src/features/**/*Routes.js'], // Caminho onde estão as rotas com os comentários Swagger
 };
 
 const swaggerSpec = swaggerJSDoc(options);
