@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -138,7 +139,7 @@ const email = {
 
   async enviarEmailVerificacao(to = 'guilherme.galdino@uscsonline.com.br', userName = 'Usuário', verificationUrl = '#') {
     await transporter.sendMail({
-      from: '"Controla Fácil" <controlafaciluscs@gmail.com>',
+      from: `"Controla Fácil" <${process.env.EMAIL_USER}>`,
       to,
       subject: "✅ Verifique seu e-mail - Controla Fácil",
       html: this.gerarHtmlVerificacao(userName, verificationUrl)
