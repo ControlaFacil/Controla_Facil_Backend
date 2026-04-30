@@ -17,10 +17,25 @@ CREATE TABLE usuarios (
 );
 GO
 
+IF OBJECT_ID('integracoes', 'U') IS NULL
+CREATE TABLE integracoes (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nome VARCHAR(255) NOT NULL,
+    marketplace VARCHAR(100) NOT NULL,
+    usuario_id INT NOT NULL,
+    ativo BIT DEFAULT 1 --ativo,
+    data_ativacao DATETIME DEFAULT GETDATE(),
+    data_atualizacao DATETIME DEFAULT GETDATE(),
+    CONSTRAINT fk_integracoes_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    CONSTRAINT uq_nome_marketplace_usuario UNIQUE (usuario_id, nome, marketplace)
+);
+GO
+
 -- 2. Tabela de Configuração de Integração (Mercado Livre)
 IF OBJECT_ID('integracao_configuracao', 'U') IS NULL
 CREATE TABLE integracao_configuracao (
     id INT PRIMARY KEY IDENTITY(1,1),
+    integracao_id INT NOT NULL,
     usuario_id INT NULL,
     access_token VARCHAR(800) NOT NULL,
     refresh_token VARCHAR(800) NOT NULL,
@@ -28,7 +43,8 @@ CREATE TABLE integracao_configuracao (
     mercado_livre_user_id BIGINT NOT NULL,
     data_ativacao DATETIME DEFAULT GETDATE(),
     data_atualizacao DATETIME DEFAULT GETDATE(),
-    CONSTRAINT fk_integracao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    CONSTRAINT fk_integracao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    CONSTRAINT fk_configuracao_integracao FOREIGN KEY (integracao_id) REFERENCES integracoes(id) ON DELETE CASCADE
 );
 GO
 
