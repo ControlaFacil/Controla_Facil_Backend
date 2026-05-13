@@ -5,11 +5,11 @@ require("dotenv")
 
 const integracaoController = {
   async cadastrarIntegracao(req, res) {
-    const { nome, marketplace } = req.body;
+    const { nome} = req.body;
     const usuarioId = req.usuario.id;
     
     try {
-      const integracao = await integracaoModel.inserirIntegracao(nome, marketplace, usuarioId);
+      const integracao = await integracaoModel.inserirIntegracao(nome, usuarioId);
 
       if (!integracao.id) {
         return res.status(500).json({

@@ -1,20 +1,22 @@
 // // O modelo integracaoModel é responsável por interagir com o banco de dados para operações relacionadas as integrações.
 
 const { pool, query } = require("../../config/db");
+const {integracaoStatus, marketplaces} = require("../../utils/enums");
 
 const integracaoModel = {
   
-  async inserirIntegracao(nome, marketplace, usuarioId) {
+  async inserirIntegracao(nome, usuarioId) {
      try {
       const dbPool = await pool;
       const result = await dbPool.request()
         .input('nome', nome)
-        .input('marketplace', marketplace)
+        .input('marketplace', marketplaces.MERCADO_LIVRE)
         .input('usuarioId', usuarioId)
+        .input('integracaoStatus', integracaoStatus.PENDENTE)
         .query(`
-          INSERT INTO integracoes (nome, marketplace, usuario_id)
+          INSERT INTO integracoes (nome, marketplace, usuario_id, ativo)
           OUTPUT INSERTED.id
-          VALUES (@nome, @marketplace, @usuarioId);
+          VALUES (@nome, @marketplace, @usuarioId, @integracaoStatus);
         `);
 
       return {
@@ -30,18 +32,18 @@ const integracaoModel = {
     try {
       const dbPool = await pool;
       const result = await dbPool.request()
-        .query(`
-          SELECT * FROM integracoes where ativo = 1;
+      .input('integracaoStatus', integracaoStatus.EXCLUIDO)  
+      .query(`
+          SELECT * FROM integracoes where ativo != @integracaoStatus;
         `);
 
       return result.recordset;
     } catch (error) {
-      console.error("Erro ao listar integrações:", error);
       throw new Error("Erro ao listar integrações: " + error);
     }
   },
 
-  async editarIntegracao(id, nome, marketplace) { 
+  async editarIntegracao(id, nome) { 
     try {
       const dbPool = await pool;
       const result = await dbPool.request()
@@ -71,9 +73,10 @@ const integracaoModel = {
       const dbPool = await pool;
       const result = await dbPool.request()
         .input('id', id)
+        .input('integracaoStatus', integracaoStatus.INATIVO)
         .query(`
           UPDATE integracoes
-          SET ativo = 0
+          SET ativo = @integracaoStatus
           WHERE id = @id;
         `);
 
