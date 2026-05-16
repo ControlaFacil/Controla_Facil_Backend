@@ -93,19 +93,20 @@ const integracaoModel = {
     }
   },
 
-  async inserirIntegracaoConfiguracao(usuarioId, access_token, expires_at, mercado_livre_user_id, refresh_token) {
+  async inserirIntegracaoConfiguracao(usuarioId, integracaoId, access_token, expires_at, mercado_livre_user_id, refresh_token) {
     try {
       const dbPool = await pool;
       const result = await dbPool.request()
         .input('usuarioId', usuarioId)
+        .input('integracaoId', integracaoId)
         .input('access_token', access_token)
         .input('expires_at', expires_at)
         .input('mercado_livre_user_id', mercado_livre_user_id)
         .input('refresh_token', refresh_token)
         .query(`
-          INSERT INTO integracao_configuracao (usuario_id, access_token, expires_at, mercado_livre_user_id, refresh_token)
+          INSERT INTO integracao_configuracao (usuario_id, integracao_id, access_token, expires_at, mercado_livre_user_id, refresh_token)
           OUTPUT INSERTED.id
-          VALUES (@usuarioId, @access_token, @expires_at, @mercado_livre_user_id, @refresh_token);
+          VALUES (@usuarioId, @integracaoId, @access_token, @expires_at, @mercado_livre_user_id, @refresh_token);
         `);
 
       return {

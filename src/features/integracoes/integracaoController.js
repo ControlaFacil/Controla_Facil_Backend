@@ -132,10 +132,10 @@ const integracaoController = {
   },
 
   async authMercadoLivre(req, res) {
-    const { code } = req.query;
-    if (!code) {
+    const { code, integracaoId } = req.query;
+    if (!code || !integracaoId) {
       return res.status(400).json({
-        error: "Código de autorização não fornecido",
+        error: "Código de autorização ou ID da integração não fornecido",
         sucesso: false,
       });
     }
@@ -160,6 +160,7 @@ const integracaoController = {
 
       const integrado = await integracaoModel.inserirIntegracaoConfiguracao(
         usuarioId,
+        integracaoId,
         dados.access_token,
         dados.expires_in,
         dados.user_id,
