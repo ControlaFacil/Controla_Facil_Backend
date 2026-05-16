@@ -110,8 +110,10 @@ const integracaoModel = {
     }
   },
 
-  async inserirIntegracaoConfiguracao(usuarioId, integracaoId, access_token, expires_at, mercado_livre_user_id, refresh_token) {
+  async inserirIntegracaoConfiguracao(usuarioId, integracaoId, access_token, expires_in, mercado_livre_user_id, refresh_token) {
     try {
+      const expires_at = new Date(Date.now() + expires_in * 1000);
+
       const dbPool = await pool;
       const result = await dbPool.request()
         .input('usuarioId', usuarioId)
@@ -130,8 +132,63 @@ const integracaoModel = {
         id: result.recordset[0].id
       };
     } catch (error) {
-      console.error("Erro ao inserir integração:", error);
-      throw new Error("Erro ao inserir integração: " + error);
+      console.error("Erro ao inserir configuração de integração:", error);
+      throw new Error("Erro ao inserir configuração de integração: " + error);
+    }
+  },
+
+  /**
+   * Busca a configuração mais recente de uma integração (tokens, expiração).
+   * @param {number} integracaoId
+   */
+  async buscarConfiguracaoIntegracao(integracaoId) {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .input('integracaoId', integracaoId)
+        .query(`
+          SELECT TOP 1 *
+          FROM integracao_configuracao
+          WHERE integracao_id = @integracaoId
+          ORDER BY data_atualizacao DESC;
+        `);
+
+      return result.recordset[0] || null;
+    } catch (error) {
+      console.error("Erro ao buscar configuração de integração:", error);
+      throw new Error("Erro ao buscar configuração de integração: " + error);
+    }
+  },
+
+  /**
+   * Atualiza os tokens após um refresh bem-sucedido com o Mercado Livre.
+   * @param {number} integracaoId
+   * @param {string} accessToken
+   * @param {string} refreshToken
+   * @param {number} expiresIn - tempo em segundos retornado pelo ML
+   */
+  async atualizarTokensIntegracao(integracaoId, accessToken, refreshToken, expiresIn) {
+    try {
+      const expires_at = new Date(Date.now() + expiresIn * 1000);
+
+      const dbPool = await pool;
+      await dbPool.request()
+        .input('integracaoId', integracaoId)
+        .input('access_token', accessToken)
+        .input('refresh_token', refreshToken)
+        .input('expires_at', expires_at)
+        .input('data_atualizacao', new Date())
+        .query(`
+          UPDATE integracao_configuracao
+          SET access_token     = @access_token,
+              refresh_token    = @refresh_token,
+              expires_at       = @expires_at,
+              data_atualizacao = @data_atualizacao
+          WHERE integracao_id  = @integracaoId;
+        `);
+    } catch (error) {
+      console.error("Erro ao atualizar tokens da integração:", error);
+      throw new Error("Erro ao atualizar tokens da integração: " + error);
     }
   }
 };

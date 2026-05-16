@@ -2,7 +2,7 @@
 const axios = require("axios");
 const integracaoModel = require("./integracaoModel");
 const {integracaoStatus} = require("../../utils/enums");
-require("dotenv")
+require("dotenv").config();
 
 const integracaoController = {
   async cadastrarIntegracao(req, res) {
@@ -159,6 +159,7 @@ const integracaoController = {
       const dados = response.data;
       const usuarioId = req.usuario.id;
 
+      // Passa expires_in (segundos) — o model converte para data absoluta
       const integrado = await integracaoModel.inserirIntegracaoConfiguracao(
         usuarioId,
         integracaoId,
