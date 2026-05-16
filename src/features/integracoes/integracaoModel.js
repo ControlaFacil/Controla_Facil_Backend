@@ -68,6 +68,23 @@ const integracaoModel = {
     }
   },
 
+  async editarStatusIntegracao(id, status) {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .input('id', id)
+        .input('status', status)
+        .query(`
+          UPDATE integracoes
+          SET ativo = @status
+          WHERE id = @id;
+        `);
+    } catch (error) {
+      console.error("Erro ao editar integração:", error);
+      throw new Error("Erro ao editar integração: " + error);
+    }
+  },
+
   async inativarIntegracao(id) { 
     try {
       const dbPool = await pool;

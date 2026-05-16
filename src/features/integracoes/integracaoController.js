@@ -1,6 +1,7 @@
 // O integracaoController é responsável por gerenciar as operações relacionadas a integrações, como inserção, atualização e exclusão de dados.
 const axios = require("axios");
 const integracaoModel = require("./integracaoModel");
+const {integracaoStatus} = require("../../utils/enums");
 require("dotenv")
 
 const integracaoController = {
@@ -166,6 +167,8 @@ const integracaoController = {
         dados.user_id,
         dados.refresh_token
       );
+
+      integracaoModel.editarStatusIntegracao(integracaoId, integracaoStatus.ATIVO)
 
       if (!integrado.id) {
         return res.status(500).json({
