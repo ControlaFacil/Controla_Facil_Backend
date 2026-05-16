@@ -1,9 +1,6 @@
 const axios = require("axios");
 const integracaoModel = require("./integracaoModel");
 
-// Renova o token 5 minutos antes de expirar para evitar falhas em requisições longas
-const MARGEM_SEGURANCA_MS = 5 * 60 * 1000;
-
 /**
  * Retorna um access_token válido para a integração informada.
  * Se o token estiver expirado (ou próximo de expirar), realiza o refresh automaticamente.
@@ -21,15 +18,10 @@ async function obterAccessTokenValido(integracaoId) {
     );
   }
 
-  const agora = Date.now();
-  const expiracaoMs = new Date(config.expires_at).getTime();
-  const tokenExpirado = agora >= expiracaoMs - MARGEM_SEGURANCA_MS;
-
-  if (!tokenExpirado) {
-    return config.access_token; // token ainda válido, usa diretamente
+  if (!config.token_expirado) {
+    return config.access_token;
   }
 
-  // Token expirado ou próximo de expirar → realizar refresh
   console.log(`[mlApiClient] Token da integração ${integracaoId} expirado. Renovando...`);
   return await _renovarToken(integracaoId, config.refresh_token);
 }

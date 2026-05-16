@@ -112,20 +112,18 @@ const integracaoModel = {
 
   async inserirIntegracaoConfiguracao(usuarioId, integracaoId, access_token, expires_in, mercado_livre_user_id, refresh_token) {
     try {
-      const expires_at = new Date(Date.now() + expires_in * 1000);
-
       const dbPool = await pool;
       const result = await dbPool.request()
         .input('usuarioId', usuarioId)
         .input('integracaoId', integracaoId)
         .input('access_token', access_token)
-        .input('expires_at', expires_at)
+        .input('expires_in', expires_in)
         .input('mercado_livre_user_id', mercado_livre_user_id)
         .input('refresh_token', refresh_token)
         .query(`
           INSERT INTO integracao_configuracao (usuario_id, integracao_id, access_token, expires_at, mercado_livre_user_id, refresh_token)
           OUTPUT INSERTED.id
-          VALUES (@usuarioId, @integracaoId, @access_token, @expires_at, @mercado_livre_user_id, @refresh_token);
+          VALUES (@usuarioId, @integracaoId, @access_token, DATEADD(second, @expires_in, GETDATE()), @mercado_livre_user_id, @refresh_token);
         `);
 
       return {
@@ -147,7 +145,12 @@ const integracaoModel = {
       const result = await dbPool.request()
         .input('integracaoId', integracaoId)
         .query(`
-          SELECT TOP 1 *
+          SELECT TOP 1 *,
+            -- 1 se o token já expirou ou expira nos próximos 5 minutos
+            CASE
+              WHEN expires_at <= DATEADD(minute, 5, GETDATE()) THEN 1
+              ELSE 0
+            END AS token_expirado
           FROM integracao_configuracao
           WHERE integracao_id = @integracaoId
           ORDER BY data_atualizacao DESC;
@@ -169,21 +172,18 @@ const integracaoModel = {
    */
   async atualizarTokensIntegracao(integracaoId, accessToken, refreshToken, expiresIn) {
     try {
-      const expires_at = new Date(Date.now() + expiresIn * 1000);
-
       const dbPool = await pool;
       await dbPool.request()
         .input('integracaoId', integracaoId)
         .input('access_token', accessToken)
         .input('refresh_token', refreshToken)
-        .input('expires_at', expires_at)
-        .input('data_atualizacao', new Date())
+        .input('expires_in', expiresIn)
         .query(`
           UPDATE integracao_configuracao
           SET access_token     = @access_token,
               refresh_token    = @refresh_token,
-              expires_at       = @expires_at,
-              data_atualizacao = @data_atualizacao
+              expires_at       = DATEADD(second, @expires_in, GETDATE()),
+              data_atualizacao = GETDATE()
           WHERE integracao_id  = @integracaoId;
         `);
     } catch (error) {
