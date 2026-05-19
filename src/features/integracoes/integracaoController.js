@@ -1,6 +1,7 @@
 // O integracaoController é responsável por gerenciar as operações relacionadas a integrações, como inserção, atualização e exclusão de dados.
 const axios = require("axios");
 const integracaoModel = require("./integracaoModel");
+const { chamarApiML, obterAccessTokenValido } = require("./mlApiClient");
 const {integracaoStatus} = require("../../utils/enums");
 require("dotenv").config();
 
@@ -189,6 +190,123 @@ const integracaoController = {
         error: "Erro na autenticação com Mercado Livre",
         message: error.response?.data?.message || error.message,
         sucesso: false,
+      });
+    }
+  },
+
+  // ─── ENDPOINTS DE TESTE ────────────────────────────────────────────────────
+
+  /**
+   * [TESTE] Verifica o estado atual do token e faz uma chamada real à API do ML
+   * para confirmar que o access_token é válido.
+   * GET /integracoes/mercado-livre/testar-token/:integracaoId
+   */
+  async testarToken(req, res) {
+    debugger;
+    const { integracaoId } = req.params;
+
+    try {
+      // 1. Busca o estado atual do token no banco (antes do possível refresh)
+      const configAntes = await integracaoModel.buscarConfiguracaoIntegracao(integracaoId);
+
+      if (!configAntes) {
+        return res.status(404).json({
+          error: "Integração não encontrada ou ainda não autenticada com o ML",
+          sucesso: false,
+        });
+      }
+
+      const estadoAntes = {
+        expires_at: configAntes.expires_at,
+        token_expirado: !!configAntes.token_expirado,
+      };
+
+      // 2. Obtém um token válido (renova automaticamente se necessário)
+      const accessToken = await obterAccessTokenValido(integracaoId);
+      const refreshOcorreu = !!configAntes.token_expirado;
+
+      // 3. Faz uma chamada real à API do ML para validar o token
+      const dadosUsuarioML = await chamarApiML(
+        integracaoId,
+        "get",
+        `https://api.mercadolibre.com/users/${configAntes.mercado_livre_user_id}`
+      );
+
+      // 4. Busca o estado atualizado do token após o possível refresh
+      const configDepois = await integracaoModel.buscarConfiguracaoIntegracao(integracaoId);
+
+      return res.status(200).json({
+        sucesso: true,
+        message: refreshOcorreu
+          ? "Token estava expirado — refresh realizado com sucesso"
+          : "Token estava válido — nenhum refresh necessário",
+        refresh_ocorreu: refreshOcorreu,
+        estado_antes: estadoAntes,
+        estado_depois: {
+          expires_at: configDepois.expires_at,
+          token_expirado: !!configDepois.token_expirado,
+        },
+        validacao_ml: {
+          chamada_bem_sucedida: true,
+          usuario_ml_id: dadosUsuarioML.id,
+          usuario_ml_nickname: dadosUsuarioML.nickname,
+        },
+      });
+    } catch (error) {
+      console.error("[testarToken] Erro:", error.message);
+      return res.status(500).json({
+        sucesso: false,
+        error: error.message,
+      });
+    }
+  },
+
+  /**
+   * [TESTE] Marca o token como expirado no banco e em seguida dispara o fluxo
+   * de refresh, simulando um token que expirou após as 6 horas.
+   * POST /integracoes/mercado-livre/forcar-refresh/:integracaoId
+   */
+  async forcarRefresh(req, res) {
+    const { integracaoId } = req.params;
+
+    try {
+      debugger;
+      // 1. Força a expiração do token no banco (1 hora atrás)
+      await integracaoModel._expirarTokenParaTeste(integracaoId);
+      console.log(`[forcarRefresh] Token da integração ${integracaoId} marcado como expirado para teste.`);
+
+      // 2. Confirma que o banco reflete a expiração
+      const configExpirada = await integracaoModel.buscarConfiguracaoIntegracao(integracaoId);
+
+      if (!configExpirada?.token_expirado) {
+        return res.status(500).json({
+          sucesso: false,
+          error: "Falha ao expirar o token no banco. Verifique o integracaoId.",
+        });
+      }
+
+      // 3. Dispara o fluxo completo de refresh via mlApiClient
+      const novoToken = await obterAccessTokenValido(integracaoId);
+
+      // 4. Busca o estado final para confirmar que os novos tokens foram salvos
+      const configAtualizada = await integracaoModel.buscarConfiguracaoIntegracao(integracaoId);
+
+      return res.status(200).json({
+        sucesso: true,
+        message: "Fluxo de refresh testado com sucesso",
+        etapas: {
+          "1_token_expirado_no_banco": true,
+          "2_refresh_disparado": true,
+          "3_novos_tokens_salvos": !configAtualizada.token_expirado,
+        },
+        novo_expires_at: configAtualizada.expires_at,
+        token_expirado_apos_refresh: !!configAtualizada.token_expirado,
+      });
+    } catch (error) {
+      console.error("[forcarRefresh] Erro:", error.message);
+      return res.status(500).json({
+        sucesso: false,
+        error: error.message,
       });
     }
   },

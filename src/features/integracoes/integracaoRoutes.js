@@ -20,4 +20,10 @@ router.put('/integracoes', autenticar, integracaoController.editarIntegracao);
 router.delete('/integracoes/:id', autenticar, integracaoController.inativarIntegracao);
 router.get('/integracoes/mercado-livre/auth', autenticar, integracaoController.authMercadoLivre);
 
+// ─── Rotas de Teste ───────────────────────────────────────────────────────────   
+// Valida o token atual e faz uma chamada real à API do ML
+router.get('/integracoes/mercado-livre/testar-token/:integracaoId', autenticar, integracaoController.testarToken);
+// Força a expiração do token no banco e dispara o refresh automático
+router.post('/integracoes/mercado-livre/forcar-refresh/:integracaoId', autenticar, integracaoController.forcarRefresh);
+
 module.exports = router;

@@ -190,6 +190,28 @@ const integracaoModel = {
       console.error("Erro ao atualizar tokens da integração:", error);
       throw new Error("Erro ao atualizar tokens da integração: " + error);
     }
+  },
+
+  /**
+   * [SOMENTE PARA TESTES] Marca o token como expirado no banco, permitindo
+   * testar o fluxo de refresh sem aguardar as 6 horas reais.
+   * @param {number} integracaoId
+   */
+  async _expirarTokenParaTeste(integracaoId) {
+    try {
+      const dbPool = await pool;
+      await dbPool.request()
+        .input('integracaoId', integracaoId)
+        .query(`
+          UPDATE integracao_configuracao
+          SET expires_at       = DATEADD(hour, -1, GETDATE()),
+              data_atualizacao = GETDATE()
+          WHERE integracao_id  = @integracaoId;
+        `);
+    } catch (error) {
+      console.error("Erro ao expirar token para teste:", error);
+      throw new Error("Erro ao expirar token para teste: " + error);
+    }
   }
 };
 
