@@ -81,7 +81,7 @@ CREATE TABLE produto (
     condicao VARCHAR(20) DEFAULT ('new'),
     caracteristicas VARCHAR(MAX) NULL,
     categoria_id INT NOT NULL,
-    categoria_nome_ml VARCHAR(255) NULL,
+    ml_categoria_id VARCHAR(50) NULL,
     gtin VARCHAR(14) NULL,
     ml_item_id VARCHAR(50) NULL,
     usuario_criador_id INT NOT NULL,
