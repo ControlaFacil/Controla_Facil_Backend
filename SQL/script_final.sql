@@ -63,6 +63,7 @@ IF OBJECT_ID('categoria_produto', 'U') IS NULL
 CREATE TABLE categoria_produto (
     id INT PRIMARY KEY IDENTITY(1,1),
     nome VARCHAR(255) NOT NULL,
+    descricao VARCHAR (MAX) NULL,
     usuario_criador_id INT NOT NULL,
     excluido BIT DEFAULT ((0)),
     CONSTRAINT fk_categoriaproduto_usuarios FOREIGN KEY (usuario_criador_id) REFERENCES usuarios(id)
