@@ -5,22 +5,25 @@ const categoriaProdutoModel = require("./categoriaProdutoModel");
 const categoriaProdutoController = {
     async inserirCategoriaProduto(req, res) {
         try {
-            const { nome, usuario_criador_id } = req.body;
+            const { nome, descricao } = req.body;
+            const usuarioId = req.usuario.id;
 
             if(!nome){
                 return res.status(400).json({
-                    error: "'nome' é obrigatório",
+                    error: "'Nome' da categoria é obrigatório!",
                     sucesso: false,
                 });
             }
 
             const novaCategoria = await categoriaProdutoModel.inserir({ 
                 nome, 
-                usuario_criador_id: usuario_criador_id || req.usuario?.id || 1 
+                descricao: descricao || null, 
+                usuario_criador_id: usuarioId
             });
 
             return res.status(201).json({
-                data: novaCategoria,
+                message: "Categoria de produto inserida com sucesso!",
+                categoria: novaCategoria,
                 sucesso: true,
             });
 
@@ -37,7 +40,8 @@ const categoriaProdutoController = {
         try {
             const categorias = await categoriaProdutoModel.listarTodas();
             return res.status(200).json({
-                data: categorias,
+                message: "Categorias de produto listadas com sucesso!",
+                categorias: categorias,
                 sucesso: true,
             });
         } catch (error) {

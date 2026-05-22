@@ -3,36 +3,59 @@
 const { pool, query } = require("../../config/db");
 
 const categoriaProduto = {
-    async inserir({nome, usuario_criador_id}) {
-        try {
-            const sql = `
-                INSERT INTO categoria_produto (nome, usuario_criador_id)
-                VALUES (?, ?);
-            `; 
-            
-            const params = [nome, usuario_criador_id];
+  async inserir({ nome, descricao, usuario_criador_id }) {
+    try {
+      const dbPool = await pool;
+      const sql = `
+                INSERT INTO categoria_produto (nome, descricao, usuario_criador_id)
+                OUTPUT inserted.*
+                VALUES (@nome, @descricao, @usuario_criador_id);
+            `;
 
-            const result = await query(sql, params);
+      const result = await dbPool
+        .request()
+        .input("nome", nome)
+        .input("descricao", descricao)
+        .input("usuario_criador_id", usuario_criador_id)
+        .query(sql);
 
-            const categoria = await query("SELECT * FROM categoria_produto WHERE id = ?", [result.insertId]);
+      const categoria = await dbPool.request()
+        .input("id", result.recordset[0].id)
+        .query("SELECT id, nome, descricao FROM categoria_produto WHERE id = @id");
 
-            return categoria[0];
-        } catch (error) {
-            console.error("Erro ao inserir categoria de produto:", error);
-            throw new Error("Erro ao inserir categoria de produto: " + error);
-        }
-    },
-
-    async listarTodas() {
-        try {
-            const sql = "SELECT id, nome FROM categoria_produto WHERE excluido = 0";
-            const categorias = await query(sql);
-            return categorias;
-        } catch (error) {
-            console.error("Erro ao listar categorias de produto:", error);
-            throw new Error("Erro ao listar categorias de produto: " + error);
-        }
+      return { id: categoria.recordset[0].id, nome: categoria.recordset[0].nome, descricao: categoria.recordset[0].descricao };
+    } catch (error) {
+      console.error("Erro ao inserir categoria de produto:", error);
+      throw new Error("Erro ao inserir categoria de produto: " + error);
     }
-}
+  },
+
+  async listarTodas() {
+    try {
+      const sql = "SELECT id, nome, descricao FROM categoria_produto WHERE excluido = 0";
+      const categorias = await query(sql);
+      return categorias;
+    } catch (error) {
+      console.error("Erro ao listar categorias de produto:", error);
+      throw new Error("Erro ao listar categorias de produto: " + error);
+    }
+  },
+
+  async buscarPorId(id) {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool
+        .request()
+        .input("id", id)
+        .query(
+          "SELECT id, nome, descricao FROM categoria_produto WHERE id = @id",
+        );
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Erro ao buscar categoria de produto:", error);
+      throw new Error("Erro ao buscar categoria de produto: " + error);
+    }
+  },
+};
 
 module.exports = categoriaProduto;
