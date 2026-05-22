@@ -56,6 +56,50 @@ const categoriaProduto = {
       throw new Error("Erro ao buscar categoria de produto: " + error);
     }
   },
+
+  async atualizar({ id, nome, descricao }) {
+    try {
+      const dbPool = await pool;
+      const sql = `
+                UPDATE categoria_produto
+                SET nome = @nome, descricao = @descricao
+                WHERE id = @id;
+            `;
+
+      await dbPool
+        .request()
+        .input("id", id)
+        .input("nome", nome)
+        .input("descricao", descricao)
+        .query(sql);
+
+      return await categoriaProduto.buscarPorId(id);
+    } catch (error) {
+      console.error("Erro ao atualizar categoria de produto:", error);
+      throw new Error("Erro ao atualizar categoria de produto: " + error);
+    }
+  },
+
+  async excluir(id) {
+    try {
+      const dbPool = await pool;
+      const sql = `
+                UPDATE categoria_produto
+                SET excluido = 1
+                WHERE id = @id;
+            `;
+
+      await dbPool
+        .request()
+        .input("id", id)
+        .query(sql);
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao excluir categoria de produto:", error);
+      throw new Error("Erro ao excluir categoria de produto: " + error);
+    }
+  },
 };
 
 module.exports = categoriaProduto;

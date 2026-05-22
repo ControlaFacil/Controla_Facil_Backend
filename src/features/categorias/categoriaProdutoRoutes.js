@@ -128,5 +128,7 @@ const categoriaProdutoController = require('./categoriaProdutoController');
 
 router.post('/categoria-produto', autenticar, categoriaProdutoController.inserirCategoriaProduto);
 router.get('/categoria-produto', autenticar, categoriaProdutoController.listarCategoriasProduto);
+router.put('/categoria-produto', autenticar, categoriaProdutoController.atualizarCategoriaProduto);
+router.delete('/categoria-produto/:id', autenticar, categoriaProdutoController.excluirCategoriaProduto);
 
 module.exports = router;

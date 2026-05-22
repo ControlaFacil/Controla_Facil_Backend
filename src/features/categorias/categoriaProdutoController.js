@@ -51,6 +51,72 @@ const categoriaProdutoController = {
                 sucesso: false,
             });
         }
+    },
+
+    async atualizarCategoriaProduto(req, res) {
+        try {
+            const { id, nome, descricao } = req.body;
+
+            if(!id) {
+                return res.status(400).json({
+                    error: "'id' da categoria é obrigatório!",
+                    sucesso: false,
+                });
+            }
+
+            if(!nome){
+                return res.status(400).json({
+                    error: "'Nome' da categoria é obrigatório!",
+                    sucesso: false,
+                });
+            }
+
+            const categoriaAtualizada = await categoriaProdutoModel.atualizar({ 
+                id,
+                nome, 
+                descricao: descricao || null
+            });
+
+            return res.status(200).json({
+                message: "Categoria de produto atualizada com sucesso!",
+                categoria: categoriaAtualizada,
+                sucesso: true,
+            });
+
+        } catch (error) {
+            console.error("Erro ao atualizar categoria de produto:", error);
+            return res.status(500).json({
+                error: "Erro ao atualizar categoria de produto",
+                sucesso: false,
+            });
+        }
+    },
+
+    async excluirCategoriaProduto(req, res) {
+        try {
+            const { id } = req.params;
+
+            if(!id) {
+                return res.status(400).json({
+                    error: "'id' da categoria é obrigatório!",
+                    sucesso: false,
+                });
+            }
+
+            await categoriaProdutoModel.excluir(id);
+
+            return res.status(200).json({
+                message: "Categoria de produto excluída com sucesso!",
+                sucesso: true,
+            });
+
+        } catch (error) {
+            console.error("Erro ao excluir categoria de produto:", error);
+            return res.status(500).json({
+                error: "Erro ao excluir categoria de produto",
+                sucesso: false,
+            });
+        }
     }
 }
 
