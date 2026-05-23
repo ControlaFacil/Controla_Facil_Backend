@@ -1,6 +1,7 @@
 // O integracaoController é responsável por gerenciar as operações relacionadas a integrações, como inserção, atualização e exclusão de dados.
 
 const categoriaProdutoModel = require("./categoriaProdutoModel");
+const mlService = require("../integracoes/mercadoLivreServices");
 
 const categoriaProdutoController = {
     async inserirCategoriaProduto(req, res) {
@@ -114,6 +115,40 @@ const categoriaProdutoController = {
             console.error("Erro ao excluir categoria de produto:", error);
             return res.status(500).json({
                 error: "Erro ao excluir categoria de produto",
+                sucesso: false,
+            });
+        }
+    },
+
+    async buscarSugestaoCategorias(req, res) {
+        try {
+            const { integracaoId, titulo } = req.body;
+
+            if(!integracaoId) {
+                return res.status(400).json({
+                    error: "'integracaoId' é obrigatório!",
+                    sucesso: false,
+                });
+            }
+
+            if(!titulo) {
+                return res.status(400).json({
+                    error: "'titulo' do produto é obrigatório!",
+                    sucesso: false,
+                });
+            }
+
+            const sugestoes = await mlService.getSugestaoCategorias(integracaoId, titulo);
+
+            return res.status(200).json({
+                message: "Sugestões de categorias encontradas com sucesso!",
+                sugestoes: sugestoes,
+                sucesso: true,
+            });
+        } catch (error) {
+            console.error("Erro ao buscar sugestões de categorias:", error);
+            return res.status(500).json({
+                error: "Erro ao buscar sugestões de categorias",
                 sucesso: false,
             });
         }

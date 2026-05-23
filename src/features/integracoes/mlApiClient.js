@@ -94,15 +94,25 @@ async function _renovarToken(integracaoId, refreshToken) {
 async function chamarApiML(integracaoId, method, url, data = null) {
   const accessToken = await obterAccessTokenValido(integracaoId);
 
-  const response = await axios({
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  };
+
+  if (data) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const config = {
     method,
     url,
-    data,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-  });
+    headers,
+  };
+
+  if (data) {
+    config.data = data;
+  }
+
+  const response = await axios(config);
 
   return response.data;
 }

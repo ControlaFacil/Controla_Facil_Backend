@@ -1,4 +1,5 @@
 const email = require("./utils/email");
+const mlServices = require("./features/integracoes/mercadoLivreServices")
 const x = [
     {
         "id": "BRAND",
@@ -3714,4 +3715,11 @@ email.enviarEmailVerificacao().then(() => {
     console.log("Email enviado com sucesso!")
 });
 
+async function testeSugestaoCategoria() {
+    const response = await mlServices.getSugestaoCategorias(19, "Sapato Nike Revolution 6 Masculino")
+    console.log(response)
+}
+
 //getRequiredAttributes();
+
+testeSugestaoCategoria();

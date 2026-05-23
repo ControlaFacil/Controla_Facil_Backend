@@ -202,7 +202,6 @@ const integracaoController = {
    * GET /integracoes/mercado-livre/testar-token/:integracaoId
    */
   async testarToken(req, res) {
-    debugger;
     const { integracaoId } = req.params;
 
     try {
@@ -270,7 +269,6 @@ const integracaoController = {
     const { integracaoId } = req.params;
 
     try {
-      debugger;
       // 1. Força a expiração do token no banco (1 hora atrás)
       await integracaoModel._expirarTokenParaTeste(integracaoId);
       console.log(`[forcarRefresh] Token da integração ${integracaoId} marcado como expirado para teste.`);

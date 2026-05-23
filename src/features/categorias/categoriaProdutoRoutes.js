@@ -130,5 +130,6 @@ router.post('/categoria-produto', autenticar, categoriaProdutoController.inserir
 router.get('/categoria-produto', autenticar, categoriaProdutoController.listarCategoriasProduto);
 router.put('/categoria-produto', autenticar, categoriaProdutoController.atualizarCategoriaProduto);
 router.delete('/categoria-produto/:id', autenticar, categoriaProdutoController.excluirCategoriaProduto);
+router.post('/categoria-produto/mercado-livre/sugeridas', autenticar, categoriaProdutoController.buscarSugestaoCategorias);
 
 module.exports = router;
