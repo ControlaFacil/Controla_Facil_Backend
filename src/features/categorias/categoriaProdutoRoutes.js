@@ -131,5 +131,6 @@ router.get('/categoria-produto', autenticar, categoriaProdutoController.listarCa
 router.put('/categoria-produto', autenticar, categoriaProdutoController.atualizarCategoriaProduto);
 router.delete('/categoria-produto/:id', autenticar, categoriaProdutoController.excluirCategoriaProduto);
 router.post('/categoria-produto/mercado-livre/sugeridas', autenticar, categoriaProdutoController.buscarSugestaoCategorias);
+router.post('/categoria-produto/mercado-livre/categoria/atributos', autenticar, categoriaProdutoController.obterAtributosCategoria);
 
 module.exports = router;

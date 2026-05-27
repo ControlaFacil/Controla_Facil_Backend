@@ -3711,15 +3711,20 @@ function getRequiredAttributes() {
    console.log(requireds);
 }
 
-email.enviarEmailVerificacao().then(() => {
-    console.log("Email enviado com sucesso!")
-});
+// email.enviarEmailVerificacao().then(() => {
+//     console.log("Email enviado com sucesso!")
+// });
 
 async function testeSugestaoCategoria() {
     const response = await mlServices.getSugestaoCategorias(19, "Sapato Nike Revolution 6 Masculino")
     console.log(response)
 }
 
+async function testeAtributosCategorias() {
+    const response = await mlServices.getAtributosCategorias(19, "MLB107564")
+    console.log(response)
+}
+
 //getRequiredAttributes();
 
-testeSugestaoCategoria();
+testeAtributosCategorias();
