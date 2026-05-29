@@ -1,85 +1,124 @@
 // O modelo Produto é responsável por interagir com o banco de dados para operações relacionadas aos produtos.
 
-const { pool, query } = require("../../config/db");
+const { pool } = require("../../config/db");
+const { produtoStatus } = require("../../utils/enums");
 
 const produtoModel = {
-  async inserir({
-    nome,
-    sku,
-    descricao,
-    preco,
-    categoria_id,
-    usuario_criador_id,
-  }) {
+  async inserir(dados, transaction = null) {
     try {
-      const sql = `INSERT INTO produto (nome, sku, descricao, preco, categoria_id, usuario_criador_id) VALUES (?, ?, ?, ?, ?, ?);`;
-      const params = [
-        nome,
-        sku,
-        descricao,
-        preco,
-        categoria_id,
-        usuario_criador_id,
-      ];
-      const result = await query(sql, params);
-      const produto = await query(
-        "SELECT id, nome, sku, descricao, preco, categoria_id FROM produto WHERE id = ?",
-        [result.insertId]
-      );
-      return produto[0];
+      const dbPool = await pool;
+      const request = transaction ? transaction.request() : dbPool.request();
+      
+      const caracteristicasStr = typeof dados.caracteristicas === 'object' && dados.caracteristicas !== null 
+        ? JSON.stringify(dados.caracteristicas) 
+        : dados.caracteristicas || null;
+
+      const result = await request
+        .input('nome', dados.nome)
+        .input('sku', dados.sku)
+        .input('preco', dados.preco)
+        .input('descricao', dados.descricao || null)
+        .input('condicao', dados.condicao || 'new')
+        .input('categoria_id', dados.categoria_id)
+        .input('caracteristicas', caracteristicasStr)
+        .input('gtin', dados.gtin || null)
+        .input('usuario_criador_id', dados.usuario_criador_id)
+        .input('integracao_id', dados.integracao_id)
+        .input('produtoStatus', produtoStatus.ATIVO)
+        .query(`
+          INSERT INTO produto (
+            nome, sku, preco, descricao, condicao, categoria_id, caracteristicas, gtin, usuario_criador_id, integracao_id, excluido
+          )
+          OUTPUT INSERTED.id
+          VALUES (
+            @nome, @sku, @preco, @descricao, @condicao, @categoria_id, @caracteristicas, @gtin, @usuario_criador_id, @integracao_id, @produtoStatus
+          );
+        `);
+
+      return {
+        id: result.recordset[0].id,
+        nome: dados.nome
+      };
     } catch (error) {
-      console.error("Erro ao inserir produto:", error);
-      throw new Error("Erro ao inserir produto: " + error);
+      console.error("Erro ao inserir produto", error);
+      throw new Error("Erro ao inserir produto: " + error.message);
+    }
+  },
+  
+  async excluir(id) {
+    try {
+      const dbPool = await pool;
+      await dbPool.request()
+        .input("id", id)
+        .input('excluido', produtoStatus.EXCLUIDO)
+        .query(
+          "UPDATE produto SET excluido = @excluido, data_alteracao = GETDATE() WHERE id = @id"
+        );
+      return true;
+    } catch (error) {
+      console.error("Erro ao excluir produto", error);
+      throw new Error("Erro ao excluir produto: " + error.message);
     }
   },
 
-  async listarTodos() {
+  async atualizar(id, dados) {
     try {
-      const sql = `SELECT 
-p.id produtoId,
-p.nome produtoNome,
-p.sku sku,
-p.descricao descricao,
-p.preco,
-p.data_criacao dataCriacao,
-p.data_alteracao dataAlteracao,
-c.id categoriaId,
-c.nome categoriaNome
-FROM produto p
-INNER JOIN categoria_produto c ON c.id = p.categoria_id;`;
-      const produtos = await query(sql);
-      return produtos;
+      const dbPool = await pool;
+      await dbPool.request()
+        .input('id', id)
+        .input('nome', dados.nome)
+        .input('sku', dados.sku)
+        .input('preco', dados.preco)
+        .input('descricao', dados.descricao)
+        .input('condicao', dados.condicao)
+        .input('categoria_id', dados.categoria_id)
+        .input('caracteristicas', dados.caracteristicas)
+        .input('gtin', dados.gtin)
+        .query(`
+          UPDATE produto
+          SET nome = @nome, 
+              sku = @sku, 
+              preco = @preco, 
+              descricao = @descricao, 
+              condicao = @condicao, 
+              categoria_id = @categoria_id, 
+              caracteristicas = @caracteristicas, 
+              gtin = @gtin,
+              data_alteracao = GETDATE()
+          WHERE id = @id;
+        `);
+
+      return { id, ...dados };
     } catch (error) {
-      console.error("Erro ao listar produtos:", error);
-      throw new Error("Erro ao listar produtos: " + error);
+      console.error("Erro ao atualizar produto", error);
+      throw new Error("Erro ao atualizar produto: " + error.message);
     }
   },
 
-  async listarPorId(id) {
+  async listarTodas() {
     try {
-      const sql = `
-            SELECT 
-p.id produtoId,
-p.nome produtoNome,
-p.sku sku,
-p.descricao descricao,
-p.preco,
-p.data_criacao dataCriacao,
-p.data_alteracao dataAlteracao,
-c.id categoriaId,
-c.nome categoriaNome
-FROM produto p
-INNER JOIN categoria_produto c ON c.id = p.categoria_id
-where p.id = ?
-        `;
-
-      const produto = await query(sql, [id]);
-      return produto[0];
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .query("SELECT * FROM produto WHERE excluido = 0 ORDER BY data_criacao DESC");
+      return result.recordset;
     } catch (error) {
-      console.error("Erro ao buscar produto por ID:", error);
-      throw new Error("Erro ao buscar produto por ID: " + error);
+      console.error("Erro ao listar produtos", error);
+      throw new Error("Erro ao listar produtos: " + error.message);
     }
   },
+
+  async buscarPorId(id) {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .input("id", id)
+        .query("SELECT * FROM produto WHERE id = @id AND excluido = 0");
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Erro ao buscar produto", error);
+      throw new Error("Erro ao buscar produto: " + error.message);
+    }
+  }
 };
 
 module.exports = produtoModel;

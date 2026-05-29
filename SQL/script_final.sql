@@ -132,7 +132,7 @@ CREATE TABLE movimentacao_estoque (
     produto_id INT NOT NULL,
     usuario_id INT NOT NULL,
     quantidade INT NOT NULL,
-    tipo VARCHAR(20) NOT NULL,
+    tipo TINYINT NOT NULL,
     motivo VARCHAR(MAX) NULL,
     data_hora DATETIME DEFAULT (getdate()),
     CONSTRAINT fk_movimentacao_produto FOREIGN KEY (produto_id) REFERENCES produto(id),

@@ -9,4 +9,22 @@ const marketplaces = Object.freeze({
     MERCADO_LIVRE: 1,
 });
 
-module.exports = { integracaoStatus, marketplaces };
+const produtoStatus = Object.freeze({
+  ATIVO: 0,
+  INATIVO: 1,
+  EXCLUIDO: 2
+});
+
+const tipoMovimentacaoEstoque = Object.freeze({
+  ENTRADA: 1,
+  SAIDA:2
+})
+
+const condicaoProduto = Object.freeze({
+  NOVO: "new",
+  USADO: "used",
+  RECONDICIONADO: "refurbished",
+  NAO_ESPECIFICADO: "not_specified"
+})
+
+module.exports = { integracaoStatus, marketplaces, produtoStatus, tipoMovimentacaoEstoque, condicaoProduto };
