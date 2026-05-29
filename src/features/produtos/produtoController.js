@@ -16,7 +16,7 @@ const produtoController = {
         quantidade_inicial = 0, quantidade_minima = 0, imagens = []
       } = req.body;
       
-      const usuario_id = req.usuario?.id || req.body.usuario_criador_id || 1;
+      const usuario_id = req.usuario?.id || req.body.usuario_criador_id || 5;
 
       if (!nome || !sku || !preco || !categoria_id || !integracao_id) {
         return res.status(400).json({

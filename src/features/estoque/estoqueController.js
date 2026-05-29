@@ -1,5 +1,6 @@
 const estoqueModel = require("./estoqueModel");
 const movimentacaoEstoqueModel = require("./movimentacaoEstoqueModel");
+const { tipoMovimentacaoEstoque } = require("../../utils/enums")
 const { pool, sql } = require("../../config/db");
 
 const estoqueController = {
@@ -23,7 +24,7 @@ const estoqueController = {
     let transaction;
     try {
       const { produto_id, quantidade, tipo, motivo } = req.body;
-      const usuario_id = req.usuario?.id || req.body.usuario_id || 1;
+      const usuario_id = req.usuario?.id || req.body.usuario_id || 5;
 
       if (!produto_id || !quantidade || !tipo) {
         return res.status(400).json({
@@ -32,7 +33,7 @@ const estoqueController = {
         });
       }
 
-      if (tipo !== 'ENTRADA' && tipo !== 'SAIDA') {
+      if (tipo !== tipoMovimentacaoEstoque.ENTRADA && tipo !== tipoMovimentacaoEstoque.SAIDA) {
         return res.status(400).json({ error: "Tipo deve ser ENTRADA ou SAIDA", sucesso: false });
       }
 
@@ -47,7 +48,7 @@ const estoqueController = {
       }
 
       let novaQuantidade = saldoAtual.qtd_disponivel;
-      if (tipo === 'ENTRADA') {
+      if (tipo === tipoMovimentacaoEstoque.ENTRADA) {
         novaQuantidade += quantidade;
       } else {
         if (novaQuantidade < quantidade) {

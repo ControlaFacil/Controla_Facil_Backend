@@ -63,6 +63,10 @@ const produtoModel = {
 
   async atualizar(id, dados) {
     try {
+      const caracteristicasStr = typeof dados.caracteristicas === 'object' && dados.caracteristicas !== null 
+        ? JSON.stringify(dados.caracteristicas) 
+        : dados.caracteristicas || null;
+
       const dbPool = await pool;
       await dbPool.request()
         .input('id', id)
@@ -72,7 +76,7 @@ const produtoModel = {
         .input('descricao', dados.descricao)
         .input('condicao', dados.condicao)
         .input('categoria_id', dados.categoria_id)
-        .input('caracteristicas', dados.caracteristicas)
+        .input('caracteristicas', caracteristicasStr)
         .input('gtin', dados.gtin)
         .query(`
           UPDATE produto
