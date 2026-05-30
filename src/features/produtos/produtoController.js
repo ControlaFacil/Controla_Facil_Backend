@@ -131,6 +131,31 @@ const produtoController = {
       console.error("Erro ao excluir produto:", error);
       res.status(500).json({ error: "Erro ao excluir produto: " + error.message });
     }
+  },
+
+  async uploadImagem(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          error: "Nenhum arquivo enviado",
+          sucesso: false
+        });
+      }
+
+      const caminho = `uploads/${req.file.filename}`;
+
+      return res.status(200).json({
+        sucesso: true,
+        caminho: caminho,
+        mensagem: "Imagem enviada com sucesso"
+      });
+    } catch (error) {
+      console.error("Erro ao realizar upload da imagem:", error);
+      return res.status(500).json({
+        error: "Erro ao realizar upload da imagem: " + error.message,
+        sucesso: false
+      });
+    }
   }
 };
 
