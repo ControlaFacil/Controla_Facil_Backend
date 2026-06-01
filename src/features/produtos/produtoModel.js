@@ -111,6 +111,36 @@ const produtoModel = {
     }
   },
 
+  /**
+   * Lista todos os produtos ativos e já inclui a imagem de destaque (ou a primeira imagem)
+   * de cada um em uma única query — evita N requests extras no frontend.
+   * O campo retornado é `imagem_destaque` com a URL relativa da imagem.
+   */
+  async listarTodasComImagemDestaque() {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .query(`
+          SELECT
+            p.*,
+            img.url_imagem AS imagem_destaque
+          FROM produto p
+          OUTER APPLY (
+            SELECT TOP 1 url_imagem
+            FROM produto_imagem pi
+            WHERE pi.produto_id = p.id
+            ORDER BY pi.destaque DESC, pi.ordem ASC
+          ) img
+          WHERE p.excluido = 0
+          ORDER BY p.data_criacao DESC
+        `);
+      return result.recordset;
+    } catch (error) {
+      console.error("Erro ao listar produtos com imagem", error);
+      throw new Error("Erro ao listar produtos: " + error.message);
+    }
+  },
+
   async buscarPorId(id) {
     try {
       const dbPool = await pool;

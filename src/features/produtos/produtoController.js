@@ -73,7 +73,7 @@ const produtoController = {
 
   async listarProdutos(req, res) {
     try {
-      const produtos = await produtoModel.listarTodas();
+      const produtos = await produtoModel.listarTodasComImagemDestaque();
       res.status(200).json({ produtos, sucesso: true });
     } catch (error) {
       console.error("Erro ao listar produtos:", error);
