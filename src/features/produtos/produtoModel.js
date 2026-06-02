@@ -24,14 +24,15 @@ const produtoModel = {
         .input('gtin', dados.gtin || null)
         .input('usuario_criador_id', dados.usuario_criador_id)
         .input('integracao_id', dados.integracao_id)
+        .input('categoria_ml', dados.categoria_ml)
         .input('produtoStatus', produtoStatus.ATIVO)
         .query(`
           INSERT INTO produto (
-            nome, sku, preco, descricao, condicao, categoria_id, caracteristicas, gtin, usuario_criador_id, integracao_id, excluido
+            nome, sku, preco, descricao, condicao, categoria_id, caracteristicas, gtin, usuario_criador_id, integracao_id, ml_categoria_id, excluido
           )
           OUTPUT INSERTED.id
           VALUES (
-            @nome, @sku, @preco, @descricao, @condicao, @categoria_id, @caracteristicas, @gtin, @usuario_criador_id, @integracao_id, @produtoStatus
+            @nome, @sku, @preco, @descricao, @condicao, @categoria_id, @caracteristicas, @gtin, @usuario_criador_id, @integracao_id, @categoria_ml, @produtoStatus
           );
         `);
 

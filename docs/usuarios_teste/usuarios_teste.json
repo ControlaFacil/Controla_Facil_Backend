@@ -1,16 +1,9 @@
 [
     {
-        "id": 3246048168,
-        "email": "test_user_8469585790970042234@testuser.com",
-        "nickname": "TESTUSER8469585790970042234",
-        "site_status": "active",
-        "password": "lmFK7UGJVl"
-    },
-    {
-        "id": 3307966702,
-        "email": "test_user_3203295744221894477@testuser.com",
-        "nickname": "TESTUSER3203295744221894477",
-        "site_status": "active",
-        "password": "6swNXSkeXz"
-    }
+    "id": 3430803000,
+    "email": "test_user_5857902706674993353@testuser.com",
+    "nickname": "TESTUSER5857902706674993353",
+    "site_status": "active",
+    "password": "27ODhTgs6e"
+}
 ]
