@@ -45,6 +45,41 @@ const produtoModel = {
       throw new Error("Erro ao inserir produto: " + error.message);
     }
   },
+
+  async inserirDadosML(dados, transaction = null){
+    try{
+      const dbPool = await pool;
+      const request = transaction ? transaction.request() : dbPool.request();
+
+      const result = await request
+        .input("produto_id", dados.produto_id)
+        .input("ml_item_id", dados.ml_item_id)
+        .input("ml_domain_id", dados.ml_domain_id)
+        .input("ml_link_anuncio", dados.ml_link_anuncio).query(`
+          UPDATE produto
+          SET 
+            ml_item_id = @ml_item_id,
+            ml_domain_id = @ml_domain_id,
+            ml_link_anuncio = @ml_link_anuncio,
+            data_alteracao = GETDATE()
+          OUTPUT INSERTED.id, INSERTED.nome
+          WHERE id = @produto_id;
+        `);
+
+      if (result.recordset.length === 0) {
+        throw new Error("Produto não encontrado para atualização");
+      }
+
+      return {
+        id: result.recordset[0].id,
+        nome: result.recordset[0].nome
+      };
+
+    }catch(error){
+      console.error("Erro ao inserir dados no ML", error);
+      throw new Error("Erro ao inserir dados no ML: " + error.message);
+    }
+  },
   
   async excluir(id) {
     try {

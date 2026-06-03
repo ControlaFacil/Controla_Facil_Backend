@@ -5,12 +5,17 @@ const { upload } = require("../../middlewares/upload");
 
 const router = express.Router();
 
+// Rotas produto
 router.post('/produto', autenticar, produtoController.inserirProduto);
 router.get('/produto', autenticar, produtoController.listarProdutos);
 router.get('/produto/:id', autenticar, produtoController.listarProdutoPorId);
 router.put('/produto/:id', autenticar, produtoController.atualizarProduto);
 router.delete('/produto/:id', autenticar, produtoController.excluirProduto);
 
+// Rotas imagens produto
 router.post('/produto/upload-imagem', autenticar, upload.single('imagem'), produtoController.uploadImagem);
+
+// Rotas Mercado Livre
+router.post('/produto/mercado-livre/publicar/:produtoId', autenticar, produtoController.publicarProdutoML);
 
 module.exports = router;

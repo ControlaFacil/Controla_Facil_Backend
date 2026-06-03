@@ -48,6 +48,65 @@ const mercadoLivreService = {
       throw Error(error.message || "Erro ao buscar atributos");
     }
   },
+
+  async publicarProduto(integracaoId, produto) {
+    try {
+      if (!produto || produto === "") {
+        throw Error(
+          "O produto é obrigatório para publicar no Mercado Livre.",
+        );
+      }
+
+      const endpoint = `https://api.mercadolibre.com/items`;
+
+      const response = await mlApiClient.chamarApiML(
+        integracaoId,
+        "post",
+        endpoint,
+        produto,
+      );
+
+      return response;
+    } catch (error) {
+      console.error("publicarProduto - " + error.message);
+      throw Error(error.message || "Erro ao publicar produto");
+    }
+  },
+
+  async adicionarDescricao(integracaoId, mlProdutoId, descricao) {
+    try {
+      
+      if (!mlProdutoId || mlProdutoId === "") {
+        throw Error(
+          "O id do produto é obrigatório para adicionar descrição no Mercado Livre.",
+        );
+      }
+
+      if (!descricao || descricao === "") {
+        throw Error(
+          "A descrição é obrigatória para adicionar no Mercado Livre.",
+        );
+      }
+
+      const payloadDescricao = {
+        plain_text: descricao
+      }
+
+      const endpoint = `https://api.mercadolibre.com/items/${mlProdutoId}/description`;
+
+      const response = await mlApiClient.chamarApiML(
+        integracaoId,
+        "post",
+        endpoint,
+        payloadDescricao,
+      );
+
+      return response;
+    } catch (error) {
+      console.error("adicionarDescricao - " + error.message);
+      throw Error(error.message || "Erro ao adicionar descrição");
+    }
+  },
 };
 
 module.exports = mercadoLivreService;

@@ -91,6 +91,7 @@ CREATE TABLE produto (
     data_alteracao DATETIME DEFAULT (getdate()),
     excluido BIT DEFAULT ((0)),
     integracao_id INT NOT NULL,
+    ml_link_anuncio VARCHAR (max) null
     CONSTRAINT fk_produto_categoria FOREIGN KEY (categoria_id) REFERENCES categoria_produto(id),
     CONSTRAINT fk_produto_usuarios FOREIGN KEY (usuario_criador_id) REFERENCES usuarios(id),
     CONSTRAINT fk_produto_integracoes FOREIGN KEY (integracao_id) REFERENCES integracoes(id)

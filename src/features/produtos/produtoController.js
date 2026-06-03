@@ -6,21 +6,41 @@ const estoqueModel = require("../estoque/estoqueModel");
 const movimentacaoEstoqueModel = require("../estoque/movimentacaoEstoqueModel");
 const produtoImagemModel = require("./produtoImagemModel");
 const { tipoMovimentacaoEstoque } = require("../../utils/enums");
+const mercadoLivreService = require("../integracoes/mercadoLivreServices");
 
 const produtoController = {
   async inserirProduto(req, res) {
     let transaction;
     try {
-      const { 
-        nome, sku, preco, descricao, condicao, categoria_id, caracteristicas, gtin, integracao_id, categoria_ml, 
-        quantidade_inicial = 0, quantidade_minima = 0, imagens = []
+      const {
+        nome,
+        sku,
+        preco,
+        descricao,
+        condicao,
+        categoria_id,
+        caracteristicas,
+        gtin,
+        integracao_id,
+        categoria_ml,
+        quantidade_inicial = 0,
+        quantidade_minima = 0,
+        imagens = [],
       } = req.body;
-      
+
       const usuario_id = req.usuario?.id || req.body.usuario_criador_id || 5;
 
-      if (!nome || !sku || !preco || !categoria_id || !integracao_id || !categoria_ml) {
+      if (
+        !nome ||
+        !sku ||
+        !preco ||
+        !categoria_id ||
+        !integracao_id ||
+        !categoria_ml
+      ) {
         return res.status(400).json({
-          error: "Campos obrigatórios ausentes (nome, sku, preco, categoria_id, integracao_id, categoria_ml)",
+          error:
+            "Campos obrigatórios ausentes (nome, sku, preco, categoria_id, integracao_id, categoria_ml)",
           sucesso: false,
         });
       }
@@ -30,34 +50,66 @@ const produtoController = {
       await transaction.begin();
 
       // 1. Criar Produto
-      const produto = await produtoModel.inserir({
-        nome, sku, preco, descricao, condicao, categoria_id, caracteristicas, gtin, integracao_id, categoria_ml, usuario_criador_id: usuario_id
-      }, transaction);
+      const produto = await produtoModel.inserir(
+        {
+          nome,
+          sku,
+          preco,
+          descricao,
+          condicao,
+          categoria_id,
+          caracteristicas,
+          gtin,
+          integracao_id,
+          categoria_ml,
+          usuario_criador_id: usuario_id,
+        },
+        transaction,
+      );
 
       // 2. Criar Saldo Inicial de Estoque
-      await estoqueModel.criarSaldoInicial(produto.id, quantidade_inicial, quantidade_minima, transaction);
+      await estoqueModel.criarSaldoInicial(
+        produto.id,
+        quantidade_inicial,
+        quantidade_minima,
+        transaction,
+      );
 
       // 3. Registrar Movimentação se saldo > 0
       if (quantidade_inicial > 0) {
         await movimentacaoEstoqueModel.registrar(
-          produto.id, usuario_id, quantidade_inicial, tipoMovimentacaoEstoque.ENTRADA, 'Saldo Inicial de Cadastro', transaction
+          produto.id,
+          usuario_id,
+          quantidade_inicial,
+          tipoMovimentacaoEstoque.ENTRADA,
+          "Saldo Inicial de Cadastro",
+          transaction,
         );
       }
 
       // 4. Inserir Imagens
       if (imagens && imagens.length > 0) {
         for (const imagem of imagens) {
-          await produtoImagemModel.inserir(produto.id, imagem.url, imagem.ordem, imagem.ehDestaque, transaction);
+          await produtoImagemModel.inserir(
+            produto.id,
+            imagem.url,
+            imagem.ordem,
+            imagem.ehDestaque,
+            transaction,
+          );
         }
       }
 
       await transaction.commit();
 
-      res.status(201).json({ 
-        produto: { ...produto, quantidadeInicial: quantidade_inicial, totalImagens: imagens.length }, 
-        sucesso: true 
+      res.status(201).json({
+        produto: {
+          ...produto,
+          quantidadeInicial: quantidade_inicial,
+          totalImagens: imagens.length,
+        },
+        sucesso: true,
       });
-
     } catch (error) {
       if (transaction) {
         try {
@@ -67,7 +119,9 @@ const produtoController = {
         }
       }
       console.error("Erro ao inserir produto:", error);
-      res.status(500).json({ error: "Erro ao inserir produto: " + error.message });
+      res
+        .status(500)
+        .json({ error: "Erro ao inserir produto: " + error.message });
     }
   },
 
@@ -77,7 +131,9 @@ const produtoController = {
       res.status(200).json({ produtos, sucesso: true });
     } catch (error) {
       console.error("Erro ao listar produtos:", error);
-      res.status(500).json({ error: "Erro ao listar produtos: " + error.message });
+      res
+        .status(500)
+        .json({ error: "Erro ao listar produtos: " + error.message });
     }
   },
 
@@ -85,9 +141,11 @@ const produtoController = {
     try {
       const { id } = req.params;
       const produto = await produtoModel.buscarPorId(id);
-      
+
       if (!produto) {
-        return res.status(404).json({ error: "Produto não encontrado", sucesso: false });
+        return res
+          .status(404)
+          .json({ error: "Produto não encontrado", sucesso: false });
       }
 
       const estoque = await estoqueModel.consultarSaldo(id);
@@ -96,40 +154,64 @@ const produtoController = {
       const produtoDetalhado = {
         ...produto,
         estoque: estoque ? estoque.qtd_disponivel : 0,
-        imagens: imagens
+        imagens: imagens,
       };
 
       res.status(200).json({ produto: produtoDetalhado, sucesso: true });
     } catch (error) {
       console.error("Erro ao buscar produto por ID:", error);
-      res.status(500).json({ error: "Erro ao buscar produto por ID: " + error.message });
+      res
+        .status(500)
+        .json({ error: "Erro ao buscar produto por ID: " + error.message });
     }
   },
 
   async atualizarProduto(req, res) {
     try {
       const { id } = req.params;
-      const { nome, sku, preco, descricao, condicao, categoria_id, caracteristicas, gtin } = req.body;
-      
+      const {
+        nome,
+        sku,
+        preco,
+        descricao,
+        condicao,
+        categoria_id,
+        caracteristicas,
+        gtin,
+      } = req.body;
+
       const produtoAtualizado = await produtoModel.atualizar(id, {
-        nome, sku, preco, descricao, condicao, categoria_id, caracteristicas, gtin
+        nome,
+        sku,
+        preco,
+        descricao,
+        condicao,
+        categoria_id,
+        caracteristicas,
+        gtin,
       });
-      
+
       res.status(200).json({ produto: produtoAtualizado, sucesso: true });
     } catch (error) {
       console.error("Erro ao atualizar produto:", error);
-      res.status(500).json({ error: "Erro ao atualizar produto: " + error.message });
+      res
+        .status(500)
+        .json({ error: "Erro ao atualizar produto: " + error.message });
     }
   },
-  
+
   async excluirProduto(req, res) {
     try {
       const { id } = req.params;
       await produtoModel.excluir(id);
-      res.status(200).json({ mensagem: "Produto excluído com sucesso", sucesso: true });
+      res
+        .status(200)
+        .json({ mensagem: "Produto excluído com sucesso", sucesso: true });
     } catch (error) {
       console.error("Erro ao excluir produto:", error);
-      res.status(500).json({ error: "Erro ao excluir produto: " + error.message });
+      res
+        .status(500)
+        .json({ error: "Erro ao excluir produto: " + error.message });
     }
   },
 
@@ -138,7 +220,7 @@ const produtoController = {
       if (!req.file) {
         return res.status(400).json({
           error: "Nenhum arquivo enviado",
-          sucesso: false
+          sucesso: false,
         });
       }
 
@@ -147,16 +229,100 @@ const produtoController = {
       return res.status(200).json({
         sucesso: true,
         caminho: caminho,
-        mensagem: "Imagem enviada com sucesso"
+        mensagem: "Imagem enviada com sucesso",
       });
     } catch (error) {
       console.error("Erro ao realizar upload da imagem:", error);
       return res.status(500).json({
         error: "Erro ao realizar upload da imagem: " + error.message,
-        sucesso: false
+        sucesso: false,
       });
     }
-  }
+  },
+
+  async publicarProdutoML(req, res) {
+    try {
+      const {produtoId} = req.params;
+
+      const produto = await produtoModel.buscarPorId(produtoId);
+      const estoque = await estoqueModel.consultarSaldo(produtoId);
+      const imagens = (await produtoImagemModel.listarPorProduto(produtoId)).map(imagem => {
+        return {
+          source: `${process.env.URL_API}/${imagem.url_imagem}`,
+        };
+      });
+      
+      if (!produto) {
+        return res.status(404).json({
+          error: "Produto não encontrado",
+          sucesso: false,
+        });
+      }
+
+      if (!estoque) {
+        return res.status(404).json({
+          error: "Estoque não encontrado",
+          sucesso: false,
+        });
+      }
+
+      if (imagens.length === 0) {
+        return res.status(404).json({
+          error: "Imagens não encontradas",
+          sucesso: false,
+        });
+      }
+
+      const payloadMl = {
+        title: produto.nome,
+        category_id: produto.ml_categoria_id,
+        price: produto.preco,
+        currency_id: "BRL",
+        available_quantity: estoque.qtd_disponivel,
+        buying_mode: "buy_it_now",
+        condition: produto.condicao,
+        listing_type_id: "gold_special",
+        sale_terms: [
+          {
+            id: "WARRANTY_TYPE",
+            value_name: "Garantia do vendedor",
+          },
+          {
+            id: "WARRANTY_TIME",
+            value_name: "90 dias",
+          },
+        ],
+        pictures: imagens,
+        attributes: produto.caracteristicas ? JSON.parse(produto.caracteristicas) : [],
+      };
+
+      const produtoML = await mercadoLivreService.publicarProduto(produto.integracao_id, payloadMl);
+
+      const descricaoML = await mercadoLivreService.adicionarDescricao(produto.integracao_id, produtoML.id, produto.descricao);
+
+      const produtoAtualizado = await produtoModel.inserirDadosML({
+        produto_id: produtoId,
+        ml_item_id: produtoML.id,
+        ml_domain_id: produtoML.domain_id,
+        ml_link_anuncio: produtoML.permalink,
+      });
+
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: "Produto publicado com sucesso",
+        produtoML: produtoML,
+        produtoAtualizado: produtoAtualizado,
+      });
+
+
+    } catch (error) {
+      console.error("Erro ao publicar produto no Mercado Livre: " + error.message);
+      return res.status(500).json({
+        error: "Erro ao publicar produto no Mercado Livre: " + error.message,
+        sucesso: false,
+      });
+    }
+  },
 };
 
 module.exports = produtoController;
