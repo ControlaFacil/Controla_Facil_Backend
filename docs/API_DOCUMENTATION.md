@@ -1022,6 +1022,33 @@ Realiza o upload físico de um arquivo de imagem para o servidor. O arquivo é a
 
 ---
 
+### 4.7. Editar Produto no Mercado Livre
+Atualiza os dados de um produto previamente publicado no Mercado Livre. As informações enviadas para a plataforma incluem título, preço, quantidade disponível em estoque, condição, imagens e atributos do produto.
+
+*   **Método:** `PUT`
+*   **URL:** `/api/produto/mercado-livre/editar/:produtoId`
+*   **Autenticação:** **Exigida** (JWT Bearer Token)
+*   **Parâmetros de Rota:**
+    *   `produtoId` (Integer, Obrigatório): ID do produto no banco de dados local.
+*   **Retornos da Requisição:**
+    *   **200 OK (Sucesso):**
+        ```json
+        {
+          "sucesso": true,
+          "mensagem": "Produto editado com sucesso",
+          "produtoAtualizadoML": {
+            "id": "MLB123456789",
+            "title": "Caderno Universitário Tilibra 10 Matérias",
+            "price": 29.90,
+            "available_quantity": 50,
+            "...": "Demais dados retornados pela API do Mercado Livre"
+          }
+        }
+        ```
+    *   **500 Internal Server Error:** Falha ao editar o produto no Mercado Livre.
+
+---
+
 ## 📁 5. Estoque (`src/features/estoque`)
 
 Gestão de saldos de estoque físico e registro histórico de movimentações (entradas e saídas).

@@ -73,6 +73,30 @@ const mercadoLivreService = {
     }
   },
 
+  async editarProduto(integracaoId, ml_produtoId, produto){
+    
+    try{
+      if(!ml_produtoId){
+        throw Error("O id do produto é obrigatório para editar no Mercado Livre.");
+      }
+      
+      const endpoint = `https://api.mercadolibre.com/items/${ml_produtoId}`;
+
+      const response = await mlApiClient.chamarApiML(
+        integracaoId,
+        "put",
+        endpoint,
+        produto,
+      );
+
+      return response;
+
+    } catch (error){
+      console.error("editarProduto - " + error.message);
+      throw Error(error.message || "Erro ao editar produto");
+    }
+  },
+
   async adicionarDescricao(integracaoId, mlProdutoId, descricao) {
     try {
       
@@ -107,6 +131,42 @@ const mercadoLivreService = {
       throw Error(error.message || "Erro ao adicionar descrição");
     }
   },
+
+  async editarDescricao (integracaoId, mlProdutoId, descricao) {
+
+    try {
+      debugger;
+      if (!mlProdutoId || mlProdutoId === "") {
+        throw Error(
+          "O id do produto é obrigatório para editar descrição no Mercado Livre.",
+        );
+      }
+
+      if (!descricao || descricao === "") {
+        throw Error(
+          "A descrição é obrigatória para editar no Mercado Livre.",
+        );
+      }
+
+      const payloadDescricao = {
+        plain_text: descricao
+      }
+
+      const endpoint = `https://api.mercadolibre.com/items/${mlProdutoId}/description`;
+
+      const response = await mlApiClient.chamarApiML(
+        integracaoId,
+        "put",
+        endpoint,
+        payloadDescricao,
+      );
+
+      return response;
+    } catch (error) {
+      console.error("editarDescricao - " + error.message);
+      throw Error(error.message || "Erro ao editar descrição");
+    }
+  }
 };
 
 module.exports = mercadoLivreService;

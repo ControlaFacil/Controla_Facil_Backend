@@ -17,5 +17,6 @@ router.post('/produto/upload-imagem', autenticar, upload.single('imagem'), produ
 
 // Rotas Mercado Livre
 router.post('/produto/mercado-livre/publicar/:produtoId', autenticar, produtoController.publicarProdutoML);
+router.put('/produto/mercado-livre/editar/:produtoId', autenticar, produtoController.editarProdutoML);
 
 module.exports = router;

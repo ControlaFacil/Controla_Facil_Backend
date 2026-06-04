@@ -375,6 +375,47 @@ const produtoController = {
       });
     }
   },
+
+  async editarProdutoML(req, res){
+    try {
+      debugger;
+      const { produtoId } = req.params;
+
+      const produto = await produtoModel.buscarPorId(produtoId);
+      const estoque = await estoqueModel.consultarSaldo(produtoId);
+      const imagens = (await produtoImagemModel.listarPorProduto(produtoId)).map(imagem => {
+        return {
+          source: `${process.env.URL_API}/${imagem.url_imagem}`,
+        };
+      });
+
+      const payloadMl = {
+        title: produto.nome,
+        price: produto.preco,
+        available_quantity: estoque.qtd_disponivel,
+        condition: produto.condicao,
+        pictures: imagens,
+        attributes: produto.caracteristicas ? JSON.parse(produto.caracteristicas) : [],
+      };
+
+      const produtoAtualizadoML = await mercadoLivreService.editarProduto(produto.integracao_id, produto.ml_item_id, payloadMl);
+
+      const descricaoMl = await mercadoLivreService.editarDescricao(produto.integracao_id, produto.ml_item_id, produto.descricao);
+
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: "Produto editado com sucesso",
+        produtoAtualizadoML: produtoAtualizadoML,
+        descricaoMl: descricaoMl,
+      });
+    } catch (error) {
+      console.error("Erro ao editar produto no Mercado Livre: " + error.message);
+      return res.status(500).json({
+        error: "Erro ao editar produto no Mercado Livre: " + error.message,
+        sucesso: false,
+      });
+    }
+  },
 };
 
 module.exports = produtoController;
