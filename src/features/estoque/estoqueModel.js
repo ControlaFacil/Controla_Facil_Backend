@@ -60,6 +60,25 @@ const estoqueModel = {
       console.error("Erro ao atualizar saldo de estoque", error);
       throw error;
     }
+  },
+
+  async atualizarEstoqueMinimo(produto_id, qtd_minima, transaction = null) {
+    try {
+      const dbPool = await pool;
+      const request = transaction ? transaction.request() : dbPool.request();
+      await request
+        .input("produto_id", produto_id)
+        .input("qtd_minima", qtd_minima)
+        .query(`
+          UPDATE estoque
+          SET qtd_minima = @qtd_minima, data_alteracao = GETDATE()
+          WHERE produto_id = @produto_id;
+        `);
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar estoque mínimo", error);
+      throw error;
+    }
   }
 };
 

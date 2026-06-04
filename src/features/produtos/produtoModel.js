@@ -97,14 +97,15 @@ const produtoModel = {
     }
   },
 
-  async atualizar(id, dados) {
+  async atualizar(id, dados, transaction = null) {
     try {
       const caracteristicasStr = typeof dados.caracteristicas === 'object' && dados.caracteristicas !== null 
         ? JSON.stringify(dados.caracteristicas) 
         : dados.caracteristicas || null;
 
       const dbPool = await pool;
-      await dbPool.request()
+      const request = transaction ? transaction.request() : dbPool.request();
+      await request
         .input('id', id)
         .input('nome', dados.nome)
         .input('sku', dados.sku)

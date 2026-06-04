@@ -36,6 +36,20 @@ const produtoImagemModel = {
       console.error("Erro ao listar imagens do produto", error);
       throw error;
     }
+  },
+
+  async excluirPorProduto(produto_id, transaction = null) {
+    try {
+      const dbPool = await pool;
+      const request = transaction ? transaction.request() : dbPool.request();
+      await request
+        .input("produto_id", produto_id)
+        .query("DELETE FROM produto_imagem WHERE produto_id = @produto_id");
+      return true;
+    } catch (error) {
+      console.error("Erro ao excluir imagens do produto", error);
+      throw error;
+    }
   }
 };
 

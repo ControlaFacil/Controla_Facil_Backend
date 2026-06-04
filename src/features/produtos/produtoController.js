@@ -154,6 +154,7 @@ const produtoController = {
       const produtoDetalhado = {
         ...produto,
         estoque: estoque ? estoque.qtd_disponivel : 0,
+        estoqueMinimo: estoque ? estoque.qtd_minima : 0,
         imagens: imagens,
       };
 
@@ -167,6 +168,7 @@ const produtoController = {
   },
 
   async atualizarProduto(req, res) {
+    let transaction;
     try {
       const { id } = req.params;
       const {
@@ -178,25 +180,75 @@ const produtoController = {
         categoria_id,
         caracteristicas,
         gtin,
+        quantidade_minima,
+        imagens = [],
       } = req.body;
 
-      const produtoAtualizado = await produtoModel.atualizar(id, {
-        nome,
-        sku,
-        preco,
-        descricao,
-        condicao,
-        categoria_id,
-        caracteristicas,
-        gtin,
-      });
+      if (!nome || !sku || !preco || !categoria_id) {
+        return res.status(400).json({
+          error: "Campos obrigatórios ausentes (nome, sku, preco, categoria_id)",
+          sucesso: false,
+        });
+      }
+
+      const dbPool = await pool;
+      transaction = new sql.Transaction(dbPool);
+      await transaction.begin();
+
+      // 1. Atualizar produto
+      const produtoAtualizado = await produtoModel.atualizar(
+        id,
+        {
+          nome,
+          sku,
+          preco,
+          descricao,
+          condicao,
+          categoria_id,
+          caracteristicas,
+          gtin,
+        },
+        transaction,
+      );
+
+      // 2. Atualizar estoque mínimo
+      if (quantidade_minima !== undefined && quantidade_minima !== null) {
+        await estoqueModel.atualizarEstoqueMinimo(
+          id,
+          parseInt(quantidade_minima, 10),
+          transaction,
+        );
+      }
+
+      // 3. Atualizar imagens (limpa as anteriores e insere as novas)
+      if (imagens) {
+        await produtoImagemModel.excluirPorProduto(id, transaction);
+        for (const imagem of imagens) {
+          await produtoImagemModel.inserir(
+            id,
+            imagem.url,
+            imagem.ordem,
+            imagem.ehDestaque,
+            transaction,
+          );
+        }
+      }
+
+      await transaction.commit();
 
       res.status(200).json({ produto: produtoAtualizado, sucesso: true });
     } catch (error) {
+      if (transaction) {
+        try {
+          await transaction.rollback();
+        } catch (rollbackError) {
+          console.error("Erro no rollback:", rollbackError);
+        }
+      }
       console.error("Erro ao atualizar produto:", error);
       res
         .status(500)
-        .json({ error: "Erro ao atualizar produto: " + error.message });
+        .json({ error: "Erro ao atualizar produto: " + error.message, sucesso: false });
     }
   },
 
