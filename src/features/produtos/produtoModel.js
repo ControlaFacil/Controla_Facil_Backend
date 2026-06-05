@@ -1,7 +1,7 @@
 // O modelo Produto é responsável por interagir com o banco de dados para operações relacionadas aos produtos.
 
 const { pool } = require("../../config/db");
-const { produtoStatus } = require("../../utils/enums");
+const { produtoStatus, integracaoStatus } = require("../../utils/enums");
 
 const produtoModel = {
   async inserir(dados, transaction = null) {
@@ -140,7 +140,7 @@ const produtoModel = {
     try {
       const dbPool = await pool;
       const result = await dbPool.request()
-        .query("SELECT * FROM produto WHERE excluido = 0 ORDER BY data_criacao DESC");
+        .query(`SELECT * FROM produto WHERE excluido != ${produtoStatus.EXCLUIDO} ORDER BY data_criacao DESC`);
       return result.recordset;
     } catch (error) {
       console.error("Erro ao listar produtos", error);
@@ -168,7 +168,7 @@ const produtoModel = {
             WHERE pi.produto_id = p.id
             ORDER BY pi.destaque DESC, pi.ordem ASC
           ) img
-          WHERE p.excluido = 0
+          WHERE p.excluido != ${produtoStatus.EXCLUIDO}
           ORDER BY p.data_criacao DESC
         `);
       return result.recordset;
