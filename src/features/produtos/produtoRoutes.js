@@ -10,6 +10,7 @@ router.post('/produto', autenticar, produtoController.inserirProduto);
 router.get('/produto', autenticar, produtoController.listarProdutos);
 router.get('/produto/:id', autenticar, produtoController.listarProdutoPorId);
 router.put('/produto/:id', autenticar, produtoController.atualizarProduto);
+router.put('/produto/status/:id', autenticar, produtoController.alterarSatusProduto);
 router.delete('/produto/:id', autenticar, produtoController.excluirProduto);
 
 // Rotas imagens produto

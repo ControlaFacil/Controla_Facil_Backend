@@ -166,6 +166,41 @@ const mercadoLivreService = {
       console.error("editarDescricao - " + error.message);
       throw Error(error.message || "Erro ao editar descrição");
     }
+  },
+
+  async alterarStatusProduto (integracaoId, mlProdutoId, status) {
+    try {
+      
+      if(!mlProdutoId || mlProdutoId === ""){
+        throw Error(
+          "O id do produto é obrigatório para alterar o status no Mercado Livre."
+        );
+      }
+
+      if(!status || status === ""){
+        throw Error(
+          "O status é obrigatório para alterar o status no Mercado Livre."
+        );
+      }
+
+      const payloadStatus = {
+        status: status
+      }
+
+      const endpoint = `https://api.mercadolibre.com/items/${mlProdutoId}`;
+
+      const response = await mlApiClient.chamarApiML(
+        integracaoId,
+        "put",
+        endpoint,
+        payloadStatus,
+      );
+
+      return response;
+    } catch (error) {
+      console.error("alterarStatusProduto - " + error.message);
+      throw Error(error.message || "Erro ao alterar status do produto");
+    }
   }
 };
 

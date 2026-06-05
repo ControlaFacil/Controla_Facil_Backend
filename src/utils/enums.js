@@ -27,4 +27,24 @@ const condicaoProduto = Object.freeze({
   NAO_ESPECIFICADO: "not_specified"
 })
 
-module.exports = { integracaoStatus, marketplaces, produtoStatus, tipoMovimentacaoEstoque, condicaoProduto };
+const statusProduto = Object.freeze({
+  ATIVO: 0,
+  PAUSADO: 1,
+  ENCERRADO: 2
+})
+
+const mapStatusProdutoML = Object.freeze({
+  [statusProduto.ATIVO]: "active",
+  [statusProduto.PAUSADO]: "paused",
+  [statusProduto.ENCERRADO]: "closed"
+})
+
+module.exports = { 
+  integracaoStatus, 
+  marketplaces, 
+  produtoStatus, 
+  tipoMovimentacaoEstoque, 
+  condicaoProduto,
+  statusProduto,
+  mapStatusProdutoML
+};

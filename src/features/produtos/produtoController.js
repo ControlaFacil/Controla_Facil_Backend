@@ -5,7 +5,7 @@ const produtoModel = require("./produtoModel");
 const estoqueModel = require("../estoque/estoqueModel");
 const movimentacaoEstoqueModel = require("../estoque/movimentacaoEstoqueModel");
 const produtoImagemModel = require("./produtoImagemModel");
-const { tipoMovimentacaoEstoque } = require("../../utils/enums");
+const { tipoMovimentacaoEstoque, mapStatusProdutoML } = require("../../utils/enums");
 const mercadoLivreService = require("../integracoes/mercadoLivreServices");
 
 const produtoController = {
@@ -186,7 +186,8 @@ const produtoController = {
 
       if (!nome || !sku || !preco || !categoria_id) {
         return res.status(400).json({
-          error: "Campos obrigatórios ausentes (nome, sku, preco, categoria_id)",
+          error:
+            "Campos obrigatórios ausentes (nome, sku, preco, categoria_id)",
           sucesso: false,
         });
       }
@@ -248,7 +249,10 @@ const produtoController = {
       console.error("Erro ao atualizar produto:", error);
       res
         .status(500)
-        .json({ error: "Erro ao atualizar produto: " + error.message, sucesso: false });
+        .json({
+          error: "Erro ao atualizar produto: " + error.message,
+          sucesso: false,
+        });
     }
   },
 
@@ -294,16 +298,18 @@ const produtoController = {
 
   async publicarProdutoML(req, res) {
     try {
-      const {produtoId} = req.params;
+      const { produtoId } = req.params;
 
       const produto = await produtoModel.buscarPorId(produtoId);
       const estoque = await estoqueModel.consultarSaldo(produtoId);
-      const imagens = (await produtoImagemModel.listarPorProduto(produtoId)).map(imagem => {
+      const imagens = (
+        await produtoImagemModel.listarPorProduto(produtoId)
+      ).map((imagem) => {
         return {
           source: `${process.env.URL_API}/${imagem.url_imagem}`,
         };
       });
-      
+
       if (!produto) {
         return res.status(404).json({
           error: "Produto não encontrado",
@@ -345,12 +351,21 @@ const produtoController = {
           },
         ],
         pictures: imagens,
-        attributes: produto.caracteristicas ? JSON.parse(produto.caracteristicas) : [],
+        attributes: produto.caracteristicas
+          ? JSON.parse(produto.caracteristicas)
+          : [],
       };
 
-      const produtoML = await mercadoLivreService.publicarProduto(produto.integracao_id, payloadMl);
+      const produtoML = await mercadoLivreService.publicarProduto(
+        produto.integracao_id,
+        payloadMl,
+      );
 
-      const descricaoML = await mercadoLivreService.adicionarDescricao(produto.integracao_id, produtoML.id, produto.descricao);
+      const descricaoML = await mercadoLivreService.adicionarDescricao(
+        produto.integracao_id,
+        produtoML.id,
+        produto.descricao,
+      );
 
       const produtoAtualizado = await produtoModel.inserirDadosML({
         produto_id: produtoId,
@@ -365,10 +380,10 @@ const produtoController = {
         produtoML: produtoML,
         produtoAtualizado: produtoAtualizado,
       });
-
-
     } catch (error) {
-      console.error("Erro ao publicar produto no Mercado Livre: " + error.message);
+      console.error(
+        "Erro ao publicar produto no Mercado Livre: " + error.message,
+      );
       return res.status(500).json({
         error: "Erro ao publicar produto no Mercado Livre: " + error.message,
         sucesso: false,
@@ -376,14 +391,15 @@ const produtoController = {
     }
   },
 
-  async editarProdutoML(req, res){
+  async editarProdutoML(req, res) {
     try {
-      debugger;
       const { produtoId } = req.params;
 
       const produto = await produtoModel.buscarPorId(produtoId);
       const estoque = await estoqueModel.consultarSaldo(produtoId);
-      const imagens = (await produtoImagemModel.listarPorProduto(produtoId)).map(imagem => {
+      const imagens = (
+        await produtoImagemModel.listarPorProduto(produtoId)
+      ).map((imagem) => {
         return {
           source: `${process.env.URL_API}/${imagem.url_imagem}`,
         };
@@ -395,12 +411,22 @@ const produtoController = {
         available_quantity: estoque.qtd_disponivel,
         condition: produto.condicao,
         pictures: imagens,
-        attributes: produto.caracteristicas ? JSON.parse(produto.caracteristicas) : [],
+        attributes: produto.caracteristicas
+          ? JSON.parse(produto.caracteristicas)
+          : [],
       };
 
-      const produtoAtualizadoML = await mercadoLivreService.editarProduto(produto.integracao_id, produto.ml_item_id, payloadMl);
+      const produtoAtualizadoML = await mercadoLivreService.editarProduto(
+        produto.integracao_id,
+        produto.ml_item_id,
+        payloadMl,
+      );
 
-      const descricaoMl = await mercadoLivreService.editarDescricao(produto.integracao_id, produto.ml_item_id, produto.descricao);
+      const descricaoMl = await mercadoLivreService.editarDescricao(
+        produto.integracao_id,
+        produto.ml_item_id,
+        produto.descricao,
+      );
 
       return res.status(200).json({
         sucesso: true,
@@ -409,9 +435,60 @@ const produtoController = {
         descricaoMl: descricaoMl,
       });
     } catch (error) {
-      console.error("Erro ao editar produto no Mercado Livre: " + error.message);
+      console.error(
+        "Erro ao editar produto no Mercado Livre: " + error.message,
+      );
       return res.status(500).json({
         error: "Erro ao editar produto no Mercado Livre: " + error.message,
+        sucesso: false,
+      });
+    }
+  },
+
+  async alterarSatusProduto(req, res) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      
+      const produto = await produtoModel.buscarTodosPorId(id);
+      if(!produto){
+        return res.status(404).json({
+          error: "Produto não encontrado",
+          sucesso: false,
+        });
+      }
+
+      const produtoAlteradoCF = await produtoModel.alterarStatus(id, status);
+      if(!produtoAlteradoCF){
+        return res.status(404).json({
+          error: "Falha ao alterar status do produto internamente.",
+          sucesso: false,
+        });
+      }
+
+      const statusML = mapStatusProdutoML[status];
+      if (!statusML) {
+        return res.status(400).json({
+          error: `Status fornecido (${status}) é inválido para integração com o Mercado Livre.`,
+          sucesso: false,
+        });
+      }
+
+      const produtoAlteradoML = await mercadoLivreService.alterarStatusProduto(
+        produto.integracao_id,
+        produto.ml_item_id,
+        statusML,
+      );
+
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: "Produto alterado com sucesso",
+        produtoAlteradoML: produtoAlteradoML,
+      });
+    } catch (error) {
+      console.error("Erro ao alterar status do produto: " + error.message);
+      return res.status(500).json({
+        error: "Erro ao alterar status do produto: " + error.message,
         sucesso: false,
       });
     }

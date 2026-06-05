@@ -189,6 +189,39 @@ const produtoModel = {
       console.error("Erro ao buscar produto", error);
       throw new Error("Erro ao buscar produto: " + error.message);
     }
+  },
+
+  async buscarTodosPorId(id) {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .input("id", id)
+        .query("SELECT * FROM produto WHERE id = @id");
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Erro ao buscar produto", error);
+      throw new Error("Erro ao buscar produto: " + error.message);
+    }
+  },
+
+  async alterarStatus(id, status) {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .input("id", id)
+        .input("status", status)
+        .query(`
+          UPDATE produto
+          SET excluido = @status,
+              data_alteracao = GETDATE()
+          OUTPUT INSERTED.id, INSERTED.excluido
+          WHERE id = @id;
+        `);
+      return result.recordset[0];
+    } catch (error) {
+      console.error("Erro ao alterar status do produto", error);
+      throw new Error("Erro ao alterar status do produto: " + error.message);
+    }
   }
 };
 
