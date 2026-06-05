@@ -202,6 +202,7 @@ const integracaoController = {
    * GET /integracoes/mercado-livre/testar-token/:integracaoId
    */
   async testarToken(req, res) {
+    debugger;
     const { integracaoId } = req.params;
 
     try {
@@ -249,6 +250,8 @@ const integracaoController = {
           chamada_bem_sucedida: true,
           usuario_ml_id: dadosUsuarioML.id,
           usuario_ml_nickname: dadosUsuarioML.nickname,
+          accessToken: accessToken,
+          refreshToken: configDepois.refresh_token,
         },
       });
     } catch (error) {
