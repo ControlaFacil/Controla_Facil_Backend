@@ -44,6 +44,35 @@ const movimentacaoEstoqueModel = {
       console.error("Erro ao listar movimentações", error);
       throw error;
     }
+  },
+
+  async listarTodas() {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .query(`
+          SELECT 
+            m.id,
+            m.produto_id,
+            m.usuario_id,
+            m.quantidade,
+            m.tipo,
+            m.motivo,
+            m.data_hora,
+            p.nome as produto_nome,
+            p.sku as produto_sku,
+            u.nome as usuario_nome
+          FROM movimentacao_estoque m
+          LEFT JOIN produto p ON m.produto_id = p.id
+          LEFT JOIN usuarios u ON m.usuario_id = u.id
+          ORDER BY m.data_hora DESC
+        `);
+        
+      return result.recordset;
+    } catch (error) {
+      console.error("Erro ao listar todas as movimentações", error);
+      throw error;
+    }
   }
 };
 

@@ -98,6 +98,16 @@ const estoqueController = {
       console.error("Erro ao listar movimentações:", error);
       res.status(500).json({ error: "Erro ao listar movimentações: " + error.message });
     }
+  },
+
+  async listarTodasMovimentacoes(req, res) {
+    try {
+      const movimentacoes = await movimentacaoEstoqueModel.listarTodas();
+      res.status(200).json({ movimentacoes, sucesso: true });
+    } catch (error) {
+      console.error("Erro ao listar todas as movimentações:", error);
+      res.status(500).json({ error: "Erro ao listar todas as movimentações: " + error.message });
+    }
   }
 };
 

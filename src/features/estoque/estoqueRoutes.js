@@ -5,6 +5,7 @@ const autenticar = require("../../middlewares/autenticar");
 const router = express.Router();
 
 // Rotas de movimentação
+router.get('/estoque/movimentacoes', estoqueController.listarTodasMovimentacoes);
 router.post('/estoque/movimentacoes', estoqueController.registrarMovimentacao);
 router.get('/estoque/movimentacoes/:produtoId', estoqueController.listarMovimentacoes);
 
