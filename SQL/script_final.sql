@@ -150,7 +150,17 @@ CREATE TABLE pedido (
     data_pedido DATETIME NOT NULL,
     total DECIMAL(10,2) NOT NULL,
     status_pedido VARCHAR(50) NOT NULL,
-    data_atualizacao_status DATETIME NOT NULL
+    data_atualizacao_status DATETIME NOT NULL,
+    usuario_id INT NOT NULL,
+    integracao_id INT NOT NULL,
+    id_comprador_ml VARCHAR(50) NULL,
+    apelido_comprador VARCHAR(150) NULL,
+    nome_completo_comprador VARCHAR(255) NULL,
+    id_envio_ml VARCHAR(50) NULL,
+    forma_pagamento VARCHAR(50) NULL,
+    metodo_pagamento VARCHAR(50) NULL,
+    CONSTRAINT fk_pedido_usuarios FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    CONSTRAINT fk_pedido_integracoes FOREIGN KEY (integracao_id) REFERENCES integracoes(id)
 );
 GO
 
@@ -160,10 +170,13 @@ IF OBJECT_ID('item_pedido', 'U') IS NULL
 CREATE TABLE item_pedido (
     id INT PRIMARY KEY IDENTITY(1,1),
     pedido_id INT NOT NULL,
-    produto_id INT NOT NULL,
+    produto_id INT NULL,
     quantidade INT NOT NULL,
     preco_unitario DECIMAL(10,2) NOT NULL,
     valor_desconto_item DECIMAL(10,2) NULL,
+    id_item_ml VARCHAR(50) NOT NULL,
+    titulo_item VARCHAR(255) NOT NULL,
+    tarifa_venda DECIMAL(10,2) NULL,
     CONSTRAINT fk_itempedido_pedido FOREIGN KEY (pedido_id) REFERENCES pedido(id),
     CONSTRAINT fk_itempedido_produto FOREIGN KEY (produto_id) REFERENCES produto(id)
 );
