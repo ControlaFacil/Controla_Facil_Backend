@@ -222,6 +222,20 @@ const produtoModel = {
       console.error("Erro ao alterar status do produto", error);
       throw new Error("Erro ao alterar status do produto: " + error.message);
     }
+  },
+
+  async buscarPorMeliItemId(mlItemId, integracaoId) {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .input("mlItemId", mlItemId)
+        .input("integracaoId", integracaoId)
+        .query("SELECT * FROM produto WHERE ml_item_id = @mlItemId AND integracao_id = @integracaoId AND excluido = 0");
+      return result.recordset[0] || null;
+    } catch (error) {
+      console.error("Erro ao buscar produto por ml_item_id:", error);
+      throw new Error("Erro ao buscar produto por ml_item_id: " + error.message);
+    }
   }
 };
 

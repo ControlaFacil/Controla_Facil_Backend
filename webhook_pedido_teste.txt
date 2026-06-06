@@ -154,3 +154,80 @@ PAYLOAD COMPLETO:
   ]
 }
 =========================================
+
+=========================================
+RECEBIDO EM: 2026-06-05T22:56:29.312Z
+TOPIC: orders_v2
+RESOURCE: /orders/2000016797265420
+PAYLOAD COMPLETO:
+{
+  "_id": "2835febf-83e0-4e23-a296-d0feab696323",
+  "topic": "orders_v2",
+  "resource": "/orders/2000016797265420",
+  "user_id": 3430803000,
+  "application_id": 6456467593802500,
+  "sent": "2026-06-05T22:56:36.511Z",
+  "attempts": 2,
+  "received": "2026-06-05T22:52:22.018Z",
+  "actions": [
+    "pack_order:false",
+    "site_id:mlb",
+    "channel:marketplace",
+    "payments",
+    "is_test:true",
+    "expiration_date",
+    "order_items"
+  ]
+}
+=========================================
+
+=========================================
+RECEBIDO EM: 2026-06-05T22:58:09.270Z
+TOPIC: orders_v2
+RESOURCE: /orders/2000016797265420
+PAYLOAD COMPLETO:
+{
+  "_id": "a75279cc-112f-44fb-a397-3733af89a37f",
+  "topic": "orders_v2",
+  "resource": "/orders/2000016797265420",
+  "user_id": 3430803000,
+  "application_id": 6456467593802500,
+  "sent": "2026-06-05T22:58:16.464Z",
+  "attempts": 1,
+  "received": "2026-06-05T22:58:16.333Z",
+  "actions": [
+    "is_test:true",
+    "pack_order:false",
+    "site_id:mlb",
+    "channel:marketplace",
+    "payments",
+    "order_items"
+  ]
+}
+=========================================
+
+=========================================
+RECEBIDO EM: 2026-06-06T15:44:29.998Z
+TOPIC: orders_v2
+RESOURCE: /orders/2000016797265420
+PAYLOAD COMPLETO:
+{
+  "_id": "2835febf-83e0-4e23-a296-d0feab696323",
+  "topic": "orders_v2",
+  "resource": "/orders/2000016797265420",
+  "user_id": 3430803000,
+  "application_id": 6456467593802500,
+  "sent": "2026-06-05T22:56:36.511Z",
+  "attempts": 2,
+  "received": "2026-06-05T22:52:22.018Z",
+  "actions": [
+    "pack_order:false",
+    "site_id:mlb",
+    "channel:marketplace",
+    "payments",
+    "is_test:true",
+    "expiration_date",
+    "order_items"
+  ]
+}
+=========================================

@@ -164,6 +164,28 @@ const integracaoModel = {
   },
 
   /**
+   * Busca a configuração de integração pelo ID de usuário do Mercado Livre.
+   * @param {number|string} mlUserId
+   */
+  async buscarPorMeliUserId(mlUserId) {
+    try {
+      const dbPool = await pool;
+      const result = await dbPool.request()
+        .input('mlUserId', mlUserId)
+        .query(`
+          SELECT TOP 1 integracao_id, usuario_id 
+          FROM integracao_configuracao 
+          WHERE mercado_livre_user_id = @mlUserId
+          ORDER BY data_atualizacao DESC;
+        `);
+      return result.recordset[0] || null;
+    } catch (error) {
+      console.error("Erro ao buscar integracao por ML User ID:", error);
+      throw new Error("Erro ao buscar integracao por ML User ID: " + error.message);
+    }
+  },
+
+  /**
    * Atualiza os tokens após um refresh bem-sucedido com o Mercado Livre.
    * @param {number} integracaoId
    * @param {string} accessToken

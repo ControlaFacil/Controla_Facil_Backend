@@ -14,7 +14,7 @@ const webhookController = {
       res.status(200).json({ received: true });
 
       // Processamento assíncrono para não travar a resposta do webhook
-      if (payload && (payload.topic === 'orders' || payload.resource && payload.resource.includes('orders'))) {
+      if (payload && (payload.topic === 'orders' || payload.topic === 'orders_v2' || (payload.resource && payload.resource.includes('orders')))) {
         await pedidoService.processarWebhookPedido(payload);
       } else {
         console.log(`[Webhook] Tópico ignorado ou não direcionado para pedidos: ${payload ? payload.topic : 'Vazio'}`);
