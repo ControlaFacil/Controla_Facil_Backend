@@ -181,3 +181,22 @@ CREATE TABLE item_pedido (
     CONSTRAINT fk_itempedido_produto FOREIGN KEY (produto_id) REFERENCES produto(id)
 );
 GO
+
+-- 11. Tabela de Relatórios Personalizados
+IF OBJECT_ID('relatorio_personalizado', 'U') IS NULL
+CREATE TABLE relatorio_personalizado (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nome VARCHAR(255) NOT NULL,
+    descricao VARCHAR(MAX) NULL,
+    tipo VARCHAR(50) NOT NULL, -- 'produtos', 'pedidos', 'estoque', 'clientes'
+    filtros VARCHAR(MAX) NOT NULL, -- JSON com filtros adicionais como { data_inicio, data_fim, status, etc. }
+    colunas VARCHAR(MAX) NOT NULL, -- JSON contendo a lista de colunas a exibir
+    usuario_id INT NOT NULL,
+    integracao_id INT NULL, -- Opcional: filtro por integração específica
+    data_criacao DATETIME DEFAULT (getdate()),
+    data_atualizacao DATETIME DEFAULT (getdate()),
+    excluido BIT DEFAULT ((0)),
+    CONSTRAINT fk_relatorios_usuarios FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    CONSTRAINT fk_relatorios_integracoes FOREIGN KEY (integracao_id) REFERENCES integracoes(id)
+);
+GO
