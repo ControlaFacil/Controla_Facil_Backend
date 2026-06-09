@@ -331,6 +331,19 @@ const produtoController = {
         });
       }
 
+      let parsedAttributes = [];
+      if (produto.caracteristicas) {
+        try {
+          parsedAttributes = JSON.parse(produto.caracteristicas);
+        } catch (parseError) {
+          return res.status(400).json({
+            sucesso: false,
+            error: "Erro ao processar as características do produto: o campo possui um formato JSON inválido.",
+            detalhes: { originalError: parseError.message }
+          });
+        }
+      }
+
       const payloadMl = {
         title: produto.nome,
         category_id: produto.ml_categoria_id,
@@ -351,9 +364,7 @@ const produtoController = {
           },
         ],
         pictures: imagens,
-        attributes: produto.caracteristicas
-          ? JSON.parse(produto.caracteristicas)
-          : [],
+        attributes: parsedAttributes,
       };
 
       const produtoML = await mercadoLivreService.publicarProduto(
@@ -381,12 +392,37 @@ const produtoController = {
         produtoAtualizado: produtoAtualizado,
       });
     } catch (error) {
-      console.error(
-        "Erro ao publicar produto no Mercado Livre: " + error.message,
-      );
-      return res.status(500).json({
-        error: "Erro ao publicar produto no Mercado Livre: " + error.message,
+      console.error("Erro completo ao publicar produto no Mercado Livre:", error);
+      
+      let mensagemErro = "Erro ao publicar produto no Mercado Livre";
+      let detalhes = null;
+      let statusHttp = 500;
+
+      if (error.response) {
+        // Erro retornado pela API do Mercado Livre (Axios)
+        statusHttp = error.response.status || 500;
+        const apiData = error.response.data;
+
+        if (apiData) {
+          mensagemErro = `Erro na API do Mercado Livre: ${apiData.message || apiData.error || error.message}`;
+          detalhes = {
+            status: apiData.status,
+            error: apiData.error,
+            message: apiData.message,
+            cause: apiData.cause || apiData.error_values || null
+          };
+        } else {
+          mensagemErro = `Erro na API do Mercado Livre (Status ${statusHttp}): ${error.message}`;
+        }
+      } else {
+        // Erro de lógica, banco de dados ou rede local
+        mensagemErro = `Erro interno ao publicar produto: ${error.message}`;
+      }
+
+      return res.status(statusHttp).json({
         sucesso: false,
+        error: mensagemErro,
+        detalhes: detalhes
       });
     }
   },

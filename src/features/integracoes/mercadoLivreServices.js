@@ -68,8 +68,9 @@ const mercadoLivreService = {
 
       return response;
     } catch (error) {
-      console.error("publicarProduto - " + error.message);
-      throw Error(error.message || "Erro ao publicar produto");
+      const detalhe = error.response?.data ? JSON.stringify(error.response.data) : error.message;
+      console.error("publicarProduto - " + detalhe);
+      throw error;
     }
   },
 
@@ -127,8 +128,9 @@ const mercadoLivreService = {
 
       return response;
     } catch (error) {
-      console.error("adicionarDescricao - " + error.message);
-      throw Error(error.message || "Erro ao adicionar descrição");
+      const detalhe = error.response?.data ? JSON.stringify(error.response.data) : error.message;
+      console.error("adicionarDescricao - " + detalhe);
+      throw error;
     }
   },
 

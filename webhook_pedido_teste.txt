@@ -333,3 +333,139 @@ PAYLOAD COMPLETO:
   ]
 }
 =========================================
+
+=========================================
+RECEBIDO EM: 2026-06-08T02:22:28.779Z
+TOPIC: orders_v2
+RESOURCE: /orders/2000016831343970
+PAYLOAD COMPLETO:
+{
+  "_id": "31c00476-58a6-443b-901e-8ed120df9ee0",
+  "topic": "orders_v2",
+  "resource": "/orders/2000016831343970",
+  "user_id": 1533497939,
+  "application_id": 6456467593802500,
+  "sent": "2026-06-08T02:22:35.544Z",
+  "attempts": 1,
+  "received": "2026-06-08T02:22:35.431Z",
+  "actions": [
+    "action:new_tag",
+    "pack_order:false",
+    "site_id:mlb",
+    "static_tags:never_buyer",
+    "channel:marketplace",
+    "date_closed",
+    "flows:new_buyer_free_shipping",
+    "hidden_for_seller",
+    "is_test:false",
+    "status"
+  ]
+}
+=========================================
+
+=========================================
+RECEBIDO EM: 2026-06-08T02:22:28.925Z
+TOPIC: orders_v2
+RESOURCE: /orders/2000016831343970
+PAYLOAD COMPLETO:
+{
+  "_id": "e5cc73eb-a4fa-442e-a21d-4845b3e3f65e",
+  "topic": "orders_v2",
+  "resource": "/orders/2000016831343970",
+  "user_id": 1533497939,
+  "application_id": 6456467593802500,
+  "sent": "2026-06-08T02:22:35.787Z",
+  "attempts": 1,
+  "received": "2026-06-08T02:22:35.49Z",
+  "actions": [
+    "pack_order:false",
+    "site_id:mlb",
+    "static_tags:never_buyer",
+    "channel:marketplace",
+    "payments",
+    "flows:new_buyer_free_shipping",
+    "is_test:false"
+  ]
+}
+=========================================
+
+=========================================
+RECEBIDO EM: 2026-06-08T02:22:32.484Z
+TOPIC: orders_v2
+RESOURCE: /orders/2000016831343970
+PAYLOAD COMPLETO:
+{
+  "_id": "67b36a2a-1893-4b25-ad9d-8383347e8cc1",
+  "topic": "orders_v2",
+  "resource": "/orders/2000016831343970",
+  "user_id": 1533497939,
+  "application_id": 6456467593802500,
+  "sent": "2026-06-08T02:22:39.373Z",
+  "attempts": 1,
+  "received": "2026-06-08T02:22:39.27Z",
+  "actions": [
+    "pack_order:false",
+    "site_id:mlb",
+    "static_tags:never_buyer",
+    "channel:marketplace",
+    "payments",
+    "flows:new_buyer_free_shipping",
+    "is_test:false",
+    "order_items"
+  ]
+}
+=========================================
+
+=========================================
+RECEBIDO EM: 2026-06-08T02:22:33.077Z
+TOPIC: orders_v2
+RESOURCE: /orders/2000016831343970
+PAYLOAD COMPLETO:
+{
+  "_id": "5ae5d5a1-3a26-4907-8f8e-b2b78530a64e",
+  "topic": "orders_v2",
+  "resource": "/orders/2000016831343970",
+  "user_id": 1533497939,
+  "application_id": 6456467593802500,
+  "sent": "2026-06-08T02:22:39.958Z",
+  "attempts": 1,
+  "received": "2026-06-08T02:22:39.841Z",
+  "actions": [
+    "pack_order:false",
+    "site_id:mlb",
+    "static_tags:never_buyer",
+    "channel:marketplace",
+    "payments",
+    "flows:new_buyer_free_shipping",
+    "is_test:false",
+    "order_items"
+  ]
+}
+=========================================
+
+=========================================
+RECEBIDO EM: 2026-06-08T02:23:40.767Z
+TOPIC: orders_v2
+RESOURCE: /orders/2000016831343970
+PAYLOAD COMPLETO:
+{
+  "_id": "3e2047bd-e05b-4d59-9747-dc08d985ca94",
+  "topic": "orders_v2",
+  "resource": "/orders/2000016831343970",
+  "user_id": 1533497939,
+  "application_id": 6456467593802500,
+  "sent": "2026-06-08T02:23:47.617Z",
+  "attempts": 1,
+  "received": "2026-06-08T02:23:47.53Z",
+  "actions": [
+    "pack_order:false",
+    "site_id:mlb",
+    "static_tags:never_buyer",
+    "channel:marketplace",
+    "payments",
+    "flows:new_buyer_free_shipping",
+    "is_test:false",
+    "order_items"
+  ]
+}
+=========================================
